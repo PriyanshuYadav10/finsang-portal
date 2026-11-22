@@ -1,0 +1,31 @@
+# Finsang portal (Apache / LiteSpeed on Hostinger)
+Options -Indexes
+DirectoryIndex index.html
+AddDefaultCharset UTF-8
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+# private folder (config, uploads, seed data)
+RewriteRule ^_app(/|$) - [F,L]
+# JSON API
+RewriteRule ^api(/.*)?$ api.php [L,QSA]
+# /login -> /login.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+)$ $1.html [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "DENY"
+Header always set Referrer-Policy "same-origin"
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+</IfModule>
+
+# php settings (ignored where not allowed)
+<IfModule mod_php.c>
+php_flag display_errors off
+</IfModule>
+
+ErrorDocument 404 /index.html

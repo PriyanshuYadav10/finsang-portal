@@ -8,8 +8,14 @@
     "dev": "node --watch server/index.js",
     "seed:demo": "node server/seed.js --demo",
     "reset": "node server/seed.js --reset",
-    "test": "node server/smoke-test.js"
+    "test": "node server/smoke-test.js",
+    "build:php": "bash scripts/build-php.sh",
+    "export:seed": "node scripts/export-seed.js"
   },
-  "engines": { "node": ">=22.13" },
-  "dependencies": { "express": "^4.21.2" }
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
 }

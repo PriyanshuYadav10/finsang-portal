@@ -70,6 +70,25 @@ trainers only their programs; identity fields, marks, certificates and fees cann
   in code; the legal pages are generic drafts and should be reviewed by counsel.
 * Video playback uses embeds/links you provide; uploaded videos beyond 25 MB should be hosted on YouTube/Vimeo.
 
+## Hostinger / shared hosting (PHP + MySQL edition)
+
+The same portal also ships as a PHP 8.1+ / MySQL backend (`php/`), for shared hosting plans that cannot run Node.
+The front-end and the API contract are identical; only the server is different.
+
+```bash
+npm run build:php          # -> dist/finsang-hostinger.zip (public site + api.php + installer)
+```
+
+1. hPanel → **Databases → MySQL Databases**: create a database and user, note the name, user and password.
+2. hPanel → **Websites → your domain → File Manager**: open `public_html`, upload `finsang-hostinger.zip` and **Extract** it there
+   (the `.htaccess` file must end up in `public_html`; enable "show hidden files" to check). Make sure PHP is **8.1 or newer** (Advanced → PHP Configuration).
+3. Open `https://yourdomain.com/install.php`, enter the database details and choose your admin email and password. Leave "demo data" unticked for a real launch.
+4. Delete `install.php` from File Manager, then log in at `/login.html`.
+
+Notes: uploads and config live in `_app/` (blocked from the web by `.htaccess`); back up the MySQL database and `_app/uploads`.
+Password-reset emails use PHP `mail()` if you set `mail_from` in `_app/config.php`; otherwise the link goes to the PHP error log and an admin can set a new password.
+Test it locally: install into a MySQL database, run `php -S 127.0.0.1:8080 -t dist/hostinger php/dev-router.php`, then `TEST_URL=http://127.0.0.1:8080 npm test`.
+
 ## Deploying
 
 The app is a single Node process that stores data in SQLite and uploaded files on disk, so it needs a host with a **persistent disk**.

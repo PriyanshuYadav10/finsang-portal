@@ -1,10 +1,15 @@
 /* Self-contained API smoke test: boots the app on a temp database and exercises the main flows and permission rules. */
 const os = require('os'), path = require('path'), fs = require('fs');
-process.env.DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'finsang-test-'));
-process.env.ADMIN_EMAIL = 'admin@test.dev'; process.env.ADMIN_PASSWORD = 'admin-password-1';
-const app = require('./index');
-const { seedDemo } = require('./seed');
-seedDemo();
+/* Usage: `npm test` boots the Node app on a temp DB. `TEST_URL=http://127.0.0.1:8080 npm test` tests an already-running
+   instance (e.g. the PHP edition installed with demo data and admin admin@test.dev / admin-password-1). */
+const REMOTE = process.env.TEST_URL;
+let app = null;
+if (!REMOTE) {
+  process.env.DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'finsang-test-'));
+  process.env.ADMIN_EMAIL = 'admin@test.dev'; process.env.ADMIN_PASSWORD = 'admin-password-1';
+  app = require('./index');
+  require('./seed').seedDemo();
+}
 
 let fails = 0;
 const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++; };
@@ -17,8 +22,9 @@ const call = async (who, method, url, body) => {
   return { s: r.status, d };
 };
 
-const server = app.listen(0, async () => {
-  base = 'http://127.0.0.1:' + server.address().port;
+const server = REMOTE ? { close() {} } : app.listen(0);
+const start = async () => {
+  base = REMOTE ? REMOTE.replace(/\/$/, '') : 'http://127.0.0.1:' + server.address().port;
   try {
     ok((await call('anon', 'GET', '/api/bootstrap')).d.state.programs.length === 5, 'public bootstrap lists programs');
     ok((await call('admin', 'POST', '/api/login', { email: 'admin@test.dev', password: 'wrong' })).s === 401, 'bad password rejected');
@@ -57,8 +63,10 @@ const server = app.listen(0, async () => {
 
     const formPost = await fetch(base + '/api/sync', { method: 'POST', headers: { 'content-type': 'text/plain', cookie: jar.admin }, body: '{}' });
     ok(formPost.status === 415, 'non-JSON state-changing request rejected');
-    ok((await fetch(base + '/server/index.js')).status === 404 && (await fetch(base + '/data/finsang.db')).status === 404, 'server code and database are not publicly served');
+    const nf = async (u) => (await fetch(base + u)).headers.get('content-type') !== 'application/javascript' && !(await (await fetch(base + u)).text()).includes('require(');
+    ok((await nf('/server/index.js')) && (await nf('/data/finsang.db')) && (await nf('/_app/config.php')) && (await fetch(base + '/_app/config.php')).status !== 200, 'server code, config and database are not publicly served');
   } catch (e) { console.error(e); fails++; }
   console.log(fails ? `\n${fails} FAILED` : '\nALL PASSED');
   server.close(); process.exit(fails ? 1 : 0);
-});
+};
+if (REMOTE) start(); else server.on('listening', start);
