@@ -83,3 +83,13 @@ Serverless hosts (Vercel, Netlify, Cloudflare Pages) will **not** work.
 
 Docker locally: `docker build -t finsang . && docker run -p 3000:3000 -v finsang-data:/data -e ADMIN_EMAIL=you@x.com -e ADMIN_PASSWORD='long-password' finsang`.
 Back up the `/data` volume (database + `uploads/`) regularly.
+
+### Fly.io
+
+```bash
+brew install flyctl && fly auth login
+fly launch --no-deploy --copy-config --name <unique-app-name>   # uses fly.toml
+fly volumes create data --size 3 --region sin                   # persistent disk (SQLite + uploads)
+fly secrets set ADMIN_EMAIL=you@example.com ADMIN_PASSWORD='long-password' BASE_URL=https://<unique-app-name>.fly.dev
+fly deploy --ha=false                                           # one machine: SQLite must not be shared
+```
