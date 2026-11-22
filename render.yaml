@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: finsang-portal
+    runtime: docker
+    plan: starter          # persistent disks need a paid plan
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 5
+    envVars:
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: BASE_URL
+        sync: false        # e.g. https://portal.yourdomain.com
