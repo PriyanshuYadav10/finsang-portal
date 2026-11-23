@@ -15,31 +15,68 @@ FS.faqListF=()=>[['Is this a guaranteed job program?','No. We provide placement 
 ['What does it cost?',`A single one-time fee of ${FS.feeText} gives you access to all ${FS.programs().length} programs. The fee is payable after your application is approved.`]];
 const faqHtml=l=>l.map(f=>`<details class="faq"><summary>${E(f[0])}</summary><p>${E(f[1])}</p></details>`).join('');
 
+/* ---------- Home (marketing landing page) ---------- */
+FS.reveal=()=>{const els=[...document.querySelectorAll('.rv')];
+ if(!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('in'));document.querySelectorAll('[data-count]').forEach(c=>c.textContent=c.dataset.count);return}
+ const io=new IntersectionObserver(es=>es.forEach(en=>{if(!en.isIntersecting)return;const el=en.target;el.classList.add('in');io.unobserve(el);
+   el.querySelectorAll('[data-count]').forEach(c=>{const to=+c.dataset.count,t0=performance.now();const step=t=>{const k=Math.min(1,(t-t0)/1100);c.textContent=Math.round(to*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)})}),{threshold:.15});
+ els.forEach(e=>io.observe(e))};
+A.annClose=()=>{try{sessionStorage.setItem('fs_ann','1')}catch(e){}const a=document.getElementById('annc');if(a)a.remove()};
+A.homeCat=c=>{FS.ui.hc=c;const g=document.getElementById('pgrid');if(!g)return;
+ g.innerHTML=FS.programs().filter(p=>!c||p.cat===c).map(FS.programCard).join('');FS.fixLinks(g);
+ document.querySelectorAll('.ptabs button').forEach(b=>b.classList.toggle('on',(b.dataset.c||'')===c))};
+FS.leadForm=(id,compact)=>`<form onsubmit="return A.lead(event)" id="${id}" class="leadf">
+ <div class="fg"><input name="name" placeholder="Your full name" required maxlength="120" autocomplete="name"></div>
+ <div class="frow"><div class="fg"><input name="phone" type="tel" placeholder="Mobile number" required pattern="[0-9+\\- ]{10,15}" autocomplete="tel"></div>
+ <div class="fg"><input name="email" type="email" placeholder="Email address" required autocomplete="email"></div></div>
+ <div class="fg"><select name="program" required><option value="">Program you are interested in</option>${FS.programs().map(p=>`<option value="${E(p.id)}">${E(p.name)}</option>`).join('')}<option value="not-sure">Not sure yet. Guide me</option></select></div>
+ ${compact?'':`<label class="chk1"><input type="checkbox" required> I agree to be contacted about Finsang programs.</label>`}
+ <button class="btn btn-a btn-block">Request a Call Back →</button><p class="hint lf-msg" style="margin-top:8px;text-align:center">Free guidance. No spam, no obligation.</p></form>`;
+A.lead=async e=>{e.preventDefault();const f=e.target,b=f.querySelector('button');b.disabled=true;
+ const pn=f.program.value==='not-sure'?'Not sure yet':FS.pname(f.program.value);
+ try{await FS.api('POST','/api/contact',{name:f.name.value,email:f.email.value,message:`Call-back request\nPhone: ${f.phone.value}\nInterested in: ${pn}`});
+  f.innerHTML='<div class="alert s" style="margin:0">Thank you! Our team will call you shortly.</div>';FS.closeModalSoon&&FS.closeModalSoon()}
+ catch(x){b.disabled=false;FS.err(x)}return false};
+A.leadModal=()=>FS.modal(`<h3 style="margin-bottom:4px">Get free career guidance</h3><p style="margin-bottom:14px">Tell us a little about yourself and we will call you back.</p>${FS.leadForm('leadm',true)}<div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn btn-o btn-sm" onclick="FS.closeModal()">Close</button></div>`);
+FS.fab=()=>{const d=String(FS.state.site.phone||'').replace(/\D/g,'');const wa=d.length>=10&&/[1-9]/.test(d.slice(-10))?(d.length===10?'91'+d:d):'';
+ return `<div class="fab"><button class="fab-cb" onclick="A.leadModal()"><span>📞</span>Request call back</button>${wa?`<a class="fab-wa" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent('Hello, I would like to know more about the Finsang programs.')}" aria-label="WhatsApp us"><svg viewBox="0 0 32 32" width="26" height="26" fill="#fff"><path d="M16 3C9 3 3.4 8.6 3.4 15.5c0 2.4.7 4.6 1.9 6.5L3.2 29l7.2-2.1c1.8 1 3.9 1.5 5.6 1.5 6.9 0 12.6-5.6 12.6-12.6S22.900 3 16 3zm6.500 17.600c-.3.800-1.700 1.500-2.300 1.600-.6.100-1.300.1-2.100-.1-.5-.2-1.200-.4-2-.8-3.500-1.500-5.800-5-6-5.300-.2-.2-1.400-1.900-1.400-3.600s.9-2.500 1.200-2.900c.3-.3.700-.4.900-.4h.7c.2 0 .5-.1.800.6.300.7 1 2.500 1.100 2.700.1.200.1.400 0 .6-.1.200-.2.400-.4.600l-.6.700c-.2.200-.4.400-.2.800.2.400 1 1.600 2.100 2.600 1.400 1.300 2.600 1.700 3 1.900.4.200.6.200.8-.1.200-.3 1-1.100 1.300-1.500.3-.4.500-.3.900-.2.400.1 2.300 1.100 2.700 1.300.4.200.7.300.8.500.1.200.1.900-.2 1.700z"/></svg></a>`:''}</div>`};
+
 FS.route('/',()=>{
- const hl=[['🗓️','3–4 Months of Structured Learning','Week-by-week roadmap with weekly assessments.'],['🏭','Industry-Oriented Curriculum','Built with input from our technology and growth partners.'],['🛠️','Practical Projects & Assignments','Learn by building: assignments and live project briefs.'],['🧭','Industry Mentorship','Guided by trainers and partner mentors.'],['🏅','Certification Opportunities','Verifiable certificates on meeting completion criteria.'],['💼','Placement Assistance','Resume, mock interviews and partner openings. Not a job guarantee.']];
+ const progs=FS.programs();
+ const cats=[...new Set(progs.map(p=>p.cat))];
+ const lessons=progs.reduce((n,p)=>n+(p.modules||[]).reduce((m,x)=>m+(x.videos||[]).length,0),0);
+ const qn=progs.reduce((n,p)=>n+(p.quiz||[]).length,0);
+ const mo=progs.map(p=>p.months),mr=mo.length?(Math.min(...mo)===Math.max(...mo)?String(mo[0]):Math.min(...mo)+'–'+Math.max(...mo)):'3–4';
+ const skills=[...new Set(progs.flatMap(p=>p.skills||[]))];
+ const hl=[['🗓️','3–4 Months of Structured Learning','Week-by-week roadmap with weekly assessments.'],['🏭','Industry-Oriented Curriculum','Built with input from our technology and growth partners.'],['🛠️','Practical Projects & Assignments','Learn by building: assignments and live project briefs.'],['🧭','Industry Mentorship','Guided by trainers and partner mentors.'],['🏅','Verifiable Certificates','A unique certificate ID anyone can verify, on meeting completion criteria.'],['💼','Placement Assistance','Resume, mock interviews and partner openings. Not a job guarantee.']];
  const steps=[['Explore','Browse programs and pick your track'],['Apply','Submit your application and resume'],['Get Approved','Our team reviews and approves'],['Learn & Build','Modules, videos, assignments, projects'],['Certify & Launch','Assessments, certificate, placement support']];
  const meth=[['📖','Learn','Recorded videos, live classes, notes and reference guides.'],['✍️','Practice','Quizzes, topic tests and guided exercises every week.'],['🔨','Build','Assignments and a team live project with mentor reviews.'],['📊','Assess','Weekly assessments, mock tests and a final evaluation.'],['🚀','Launch','Portfolio, mock interviews and placement assistance.']];
-  FS.mountPublic(`
- <section class="hero"><div class="wrap"><div><span class="eyebrow" style="background:rgba(255,255,255,.14);color:#fff">Skill Development &amp; Career Launch Program</span>
- <h1>Learn Skills. Build Experience. <em>Launch Your Career.</em></h1>
- <p class="lead">A 3–4 month industry-oriented program combining structured learning, practical projects, mentorship, certification and placement assistance — by Finsang India with GrainZap IT Solutions and Growth Digital.</p>
- <div class="cta"><a href="#" onclick="A.enroll();return false" class="btn btn-a">Enroll Now →</a><a href="#/programs" class="btn btn-w">Explore Programs</a></div>
- <div class="badges"><div><b>5</b>Career tracks</div><div><b>3–4</b>Months</div><div><b>3</b>Industry partners</div><div><b>Live</b>Projects</div></div></div>
- <div class="hv"><div class="c c1"><div class="row sp-b"><b>My Learning Progress</b><span class="tag g">Sample</span></div><div style="margin:12px 0 6px;font-size:.85rem;color:var(--mut)">Software Development · Month 2</div>${FS.bar(62)}<div class="row sp-b" style="margin-top:10px;font-size:.8rem;color:var(--mut)"><span>12 of 18 lessons</span><span>62%</span></div></div>
- <div class="c c2"><b>📝 Next assessment</b><p style="font-size:.85rem">Month 2 MCQ test<br>Friday, 5:00 PM</p></div>
- <div class="c c3"><b>🏅 Certificate</b><p style="font-size:.82rem">Unique verifiable ID on completion</p></div></div></div></section>
- <section class="sec alt"><div class="wrap"><div class="sec-head"><span class="eyebrow">Program Highlights</span><h2>Everything you need to get career-ready</h2></div>
- <div class="grid g3">${hl.map(h=>`<div class="card hl"><div class="ic">${h[0]}</div><div><h3>${h[1]}</h3><p style="font-size:.9rem;margin-top:4px">${h[2]}</p></div></div>`).join('')}</div></div></section>
- <section class="sec"><div class="wrap"><div class="sec-head"><span class="eyebrow">Featured Programs</span><h2>Choose your skill track</h2><p>Five programs designed around in-demand roles.</p></div>
- <div class="grid g3">${FS.programs().slice(0,6).map(FS.programCard).join('')}</div><div style="text-align:center;margin-top:30px"><a href="#/programs" class="btn btn-o">View all programs</a></div></div></section>
- <section class="sec alt"><div class="wrap"><div class="sec-head"><span class="eyebrow">How It Works</span><h2>Your journey from application to career</h2></div>
- <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">${steps.map((s,i)=>`<div class="step"><div class="n">${i+1}</div><h3>${s[0]}</h3><p style="font-size:.88rem">${s[1]}</p></div>`).join('')}</div></div></section>
- <section class="sec dark"><div class="wrap"><div class="sec-head"><span class="eyebrow" style="background:rgba(255,255,255,.14);color:#fff">Learning Methodology</span><h2>Learn → Practice → Build → Assess → Launch</h2></div>
- <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">${meth.map(m=>`<div class="card" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);box-shadow:none"><div style="font-size:1.8rem">${m[0]}</div><h3 style="margin:8px 0 6px">${m[1]}</h3><p style="font-size:.88rem">${m[2]}</p></div>`).join('')}</div></div></section>
- <section class="sec"><div class="wrap"><div class="sec-head"><span class="eyebrow">Partners &amp; Industry Collaborators</span><h2>One program, three organizations</h2></div>${partnerCards()}<div style="text-align:center;margin-top:28px"><a href="#/partners" class="btn btn-o">Learn about our partners</a></div></div></section>
- <section class="sec"><div class="wrap" style="max-width:820px"><div class="sec-head"><span class="eyebrow">FAQs</span><h2>Frequently asked questions</h2></div>${faqHtml(FS.faqListF().slice(0,5))}<p style="text-align:center"><a href="#/faq">See all FAQs →</a></p></div></section>
- <section class="sec"><div class="wrap"><div class="price"><div><span class="eyebrow">Simple pricing</span><h2>One payment. All five programs.</h2><ul>${FS.programs().map(p=>`<li>${E(p.name)}</li>`).join('')}<li>Certificate &amp; placement assistance</li></ul></div><div style="text-align:center"><div class="amt">${FS.feeText}</div><p style="margin:6px 0 16px">one-time fee</p><button class="btn btn-a" onclick="A.enroll()">Enroll Now</button></div></div></div></section>
- <section class="sec" style="padding-top:0"><div class="wrap"><div class="cta-band"><h2>Ready to launch your career?</h2><p>One payment of ${FS.feeText}. ${FS.programs().length} programs. Start learning today.</p><a href="#" onclick="A.enroll();return false" class="btn btn-a">Enroll Now →</a></div></div></section>`,'#/');
+ let ann='';try{ann=sessionStorage.getItem('fs_ann')?'':`<div class="annc" id="annc"><span>🎓 <b>Admissions open</b> for the next batch. Limited seats per program.</span><a href="#" onclick="A.enroll();return false">Apply now →</a><button onclick="A.annClose()" aria-label="Close">×</button></div>`}catch(e){}
+ const stat=(n,l)=>`<div class="hs"><b data-count="${n}">0</b><span>${l}</span></div>`;
+ FS.mountPublic(`${ann}
+ <section class="hx"><div class="hx-bg"></div><div class="wrap hx-in"><div class="hx-l">
+  <span class="eyebrow">Skill Development &amp; Career Launch Program</span>
+  <h1>Learn Skills. Build Experience. <em>Launch Your Career.</em></h1>
+  <p class="lead">A ${mr} month, industry-oriented program with structured learning, live projects, mentorship, certification and placement assistance, by Finsang India with GrainZap IT Solutions and Growth Digital.</p>
+  <div class="cta"><a href="#" onclick="A.enroll();return false" class="btn btn-a">Enroll Now →</a><a href="#/programs" class="btn btn-w">Explore Programs</a></div>
+  <ul class="trust"><li>✓ Verifiable certificate</li><li>✓ Live projects</li><li>✓ Mentor support</li><li>✓ Placement assistance*</li></ul></div>
+  <div class="hx-r"><div class="leadc"><h3>Get free career guidance</h3><p>Share your details and our counsellor will call you back.</p>${FS.leadForm('leadh')}</div></div></div></section>
+ <section class="stats rv"><div class="wrap">${stat(progs.length,'Career tracks')}<div class="hs"><b>${mr}</b><span>Months of learning</span></div>${stat(lessons,'Video lessons')}${stat(qn,'Practice questions')}${stat(Object.keys(FS.ORGS).length,'Industry partners')}</div></section>
+ <div class="marq" aria-hidden="true"><div class="mt">${[...skills,...skills].map(s=>`<span>${E(s)}</span>`).join('')}</div></div>
+ <section class="sec" id="programs"><div class="wrap rv"><div class="sec-head"><span class="eyebrow">Featured Programs</span><h2>Learn with a curriculum built around real roles</h2><p>Pick a track and see exactly what you will learn, build and be assessed on.</p></div>
+  <div class="ptabs"><button class="on" data-c="" onclick="A.homeCat('')">All programs</button>${cats.map(c=>`<button data-c="${E(c)}" onclick="A.homeCat(this.dataset.c)">${E(c)}</button>`).join('')}</div>
+  <div class="grid g3" id="pgrid">${progs.map(FS.programCard).join('')}</div><div style="text-align:center;margin-top:30px"><a href="#/programs" class="btn btn-o">View all programs</a></div></div></section>
+ <section class="sec alt"><div class="wrap rv"><div class="sec-head"><span class="eyebrow">Why Finsang</span><h2>Everything you need to get career-ready</h2></div>
+  <div class="bento">${hl.map((h,i)=>`<div class="bn ${i===0?'big':''}"><i>${h[0]}</i><h3>${h[1]}</h3><p>${h[2]}</p></div>`).join('')}</div></div></section>
+ <section class="sec"><div class="wrap rv"><div class="sec-head"><span class="eyebrow">How It Works</span><h2>Your journey from application to career</h2></div>
+  <div class="tl">${steps.map((s,i)=>`<div class="tl-s"><div class="n">${i+1}</div><h3>${s[0]}</h3><p>${s[1]}</p></div>`).join('')}</div></div></section>
+ <section class="sec dark"><div class="wrap rv"><div class="sec-head"><span class="eyebrow" style="background:rgba(255,255,255,.14);color:#fff">Learning Methodology</span><h2>Learn → Practice → Build → Assess → Launch</h2></div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">${meth.map(m=>`<div class="card mcard"><div style="font-size:1.8rem">${m[0]}</div><h3 style="margin:8px 0 6px">${m[1]}</h3><p style="font-size:.88rem">${m[2]}</p></div>`).join('')}</div></div></section>
+ <section class="sec"><div class="wrap rv"><div class="sec-head"><span class="eyebrow">Partners &amp; Industry Collaborators</span><h2>One program, three organizations</h2></div>${partnerCards()}<div style="text-align:center;margin-top:28px"><a href="#/partners" class="btn btn-o">Learn about our partners</a></div></div></section>
+ <section class="sec alt"><div class="wrap rv" style="max-width:820px"><div class="sec-head"><span class="eyebrow">FAQs</span><h2>Frequently asked questions</h2></div>${faqHtml(FS.faqListF().slice(0,5))}<p style="text-align:center"><a href="#/faq">See all FAQs →</a></p></div></section>
+ <section class="sec"><div class="wrap rv"><div class="price"><div><span class="eyebrow">Simple pricing</span><h2>One payment. All five programs.</h2><ul>${progs.map(p=>`<li>${E(p.name)}</li>`).join('')}<li>Certificate &amp; placement assistance</li></ul></div><div style="text-align:center"><div class="amt">${FS.feeText}</div><p style="margin:6px 0 16px">one-time fee</p><button class="btn btn-a" onclick="A.enroll()">Enroll Now</button></div></div></div></section>
+ <section class="sec" style="padding-top:0"><div class="wrap rv"><div class="cta-band"><h2>Ready to launch your career?</h2><p>One payment of ${FS.feeText}. ${progs.length} programs. Start learning today.</p><a href="#" onclick="A.enroll();return false" class="btn btn-a">Enroll Now →</a> <a href="#" onclick="A.leadModal();return false" class="btn btn-w">Talk to a counsellor</a></div><p class="hint" style="text-align:center;margin-top:14px">*Placement assistance means resume support, mock interviews and access to partner openings. It is not a guarantee of employment.</p></div></section>`,'#/');
+ FS.reveal();
 });
 function partnerCards(){return `<div class="grid g3">${Object.keys(FS.ORGS).map(k=>{const o=FS.ORGS[k];return `<div class="card" style="border-top:4px solid ${o.color}">${FS.logoOrg(k,true)}<span class="tag m" style="margin:14px 0 8px;display:block;width:fit-content">${o.role}</span><p style="font-size:.9rem;margin-bottom:12px">${o.desc}</p><ul class="chk" style="font-size:.88rem">${o.contrib.map(c=>`<li>${c}</li>`).join('')}</ul></div>`}).join('')}</div>`}
 

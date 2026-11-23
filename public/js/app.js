@@ -19,13 +19,15 @@ FS.mountPublic=(html,active)=>{
   <a href="#" onclick="A.enroll();return false" class="btn btn-p btn-sm" style="margin-left:6px">Enroll ${FS.feeText}</a></nav></div></header>
   <main class="view">${html}</main>${footer()}`;
 };
-function footer(){return `<footer><div class="wrap"><div class="cols">
+function footer(){const S=FS.state.site||{};return `<footer><div class="wrap"><div class="cols">
  <div><div class="logo" style="margin-bottom:12px"><img src="img/logo.png" alt="Finsang"></div>
- <p style="color:#bdbbb3;font-size:.88rem">${FS.ORGS.finsang.name}. Industry-oriented skill development with certification and placement assistance (not a guarantee of employment).</p></div>
- <div><h4>Explore</h4>${FS.programs().slice(0,5).map(p=>`<a href="#/programs/${p.id}">${p.name}</a>`).join('')}</div>
- <div><h4>Quick Links</h4><a href="#/about">About Us</a><a href="#/partners">Our Partners</a><a href="#/verify">Verify Certificate</a><a href="#/login">Student / Staff Login</a><a href="#/contact">Contact Us</a><a href="#/privacy">Privacy Policy</a><a href="#/terms">Terms &amp; Conditions</a></div>
+ <p style="color:#bdbbb3;font-size:.88rem">${FS.ORGS.finsang.name}. Industry-oriented skill development with certification and placement assistance (not a guarantee of employment).</p>
+ <div class="ct">${S.email?`<div>✉ <b>${E(S.email)}</b></div>`:''}${S.phone?`<div>📞 <b>${E(S.phone)}</b></div>`:''}${S.address?`<div>📍 ${E(S.address)}</div>`:''}</div>
+ <a href="#" onclick="A.enroll();return false" class="apply">Apply now →</a></div>
+ <div><h4>Our Programs</h4>${FS.programs().map(p=>`<a href="#/programs/${p.id}">${E(p.name)}</a>`).join('')}</div>
+ <div><h4>Quick Links</h4><a href="#/about">About Us</a><a href="#/partners">Our Partners</a><a href="#/track">Track Application</a><a href="#/verify">Verify Certificate</a><a href="#/login">Student / Staff Login</a><a href="#/contact">Contact Us</a><a href="#/faq">FAQs</a><a href="#/privacy">Privacy Policy</a><a href="#/terms">Terms &amp; Conditions</a></div>
  <div><h4>Program Partners</h4><a href="#/partners"><b style="color:#fff">${FS.ORGS.grainzap.name}</b><br>Technology &amp; project partner</a><a href="#/partners"><b style="color:#fff">Growth Digital</b><br>Marketing &amp; growth partner</a></div></div>
- <div class="bot"><span>© ${new Date().getFullYear()} ${FS.ORGS.finsang.name}</span><span>${E(FS.state.site.email||'')}</span></div></div></footer>`}
+ <div class="bot"><span>© ${new Date().getFullYear()} ${FS.ORGS.finsang.name}. All rights reserved.</span><span>Placement assistance is not a guarantee of employment.</span></div></div></footer>${FS.fab?FS.fab():''}`}
 
 FS.mountPortal=(role,page,title,html)=>{
   const u=FS.user();const nav=FS.NAV[role];
