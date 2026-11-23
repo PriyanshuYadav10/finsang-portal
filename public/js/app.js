@@ -6,7 +6,7 @@ const $app=()=>document.getElementById('app');
 const PUB=[['#/','Home'],['#/programs','Programs'],['#/about','About'],['#/partners','Partners'],['#/contact','Contact'],['#/faq','FAQ']];
 FS.NAV={
  student:[['dashboard','🏠','Dashboard'],['programs','🎓','My Programs'],['materials','📚','Learning Materials'],['videos','▶️','Video Learning'],['assessments','📝','Papers & Assessments'],['assignments','📤','Assignments'],['announcements','🔔','Announcements'],['certificates','🏅','Certificates'],['placement','💼','Placement']],
- admin:[['overview','📊','Overview'],['students','👥','Students & Applications'],['programs','🎓','Programs'],['content','🗂️','Learning Content'],['assessments','📝','Assessments'],['certificates','🏅','Certificates'],['placement','💼','Placement'],['announcements','📣','Announcements'],['staff','🧑‍🏫','Trainers & Staff'],['inbox','✉️','Messages'],['reports','📈','Reports & Analytics'],['settings','⚙️','Settings']],
+ admin:[['overview','📊','Overview'],['students','👥','Students & Applications'],['programs','🎓','Programs'],['content','🗂️','Learning Content'],['assessments','📝','Assessments'],['certificates','🏅','Certificates'],['placement','💼','Placement'],['announcements','📣','Announcements'],['staff','🧑‍🏫','Trainers & Staff'],['inbox','✉️','Messages'],['website','🌐','Website Content'],['reports','📈','Reports & Analytics'],['settings','⚙️','Settings']],
  trainer:[['overview','🏠','Overview'],['students','👥','My Students'],['content','🗂️','Study Materials & Videos'],['assignments','📤','Assignments & Reviews'],['assessments','📝','Assessments'],['attendance','🗓️','Attendance']]
 };
 FS.logo=()=>`<a href="#/" class="logo"><img src="img/logo.png" alt="Finsang"></a>`;
@@ -23,17 +23,17 @@ FS.mountPublic=(html,active)=>{
 };
 function footer(){const S=FS.state.site||{};return `<footer><div class="wrap"><div class="cols">
  <div><div class="logo" style="margin-bottom:12px"><img src="img/logo.png" alt="Finsang"></div>
- <p style="color:#bdbbb3;font-size:.88rem">${FS.ORGS.finsang.name}. Industry-oriented skill development with certification and placement assistance (not a guarantee of employment).</p>
+ <p style="color:#bdbbb3;font-size:.88rem">${E(FS.ORGS.finsang.name)}. ${E(FS.C().footer.about)}</p>
  <div class="ct">${S.email?`<div>✉ <b>${E(S.email)}</b></div>`:''}${S.phone?`<div>📞 <b>${E(S.phone)}</b></div>`:''}${S.address?`<div>📍 ${E(S.address)}</div>`:''}</div>
  <a href="#" onclick="A.enroll();return false" class="apply">Apply now →</a></div>
  <div><h4>Our Programs</h4>${FS.programs().map(p=>`<a href="#/programs/${p.id}">${E(p.name)}</a>`).join('')}</div>
  <div><h4>Quick Links</h4><a href="#/about">About Us</a><a href="#/partners">Our Partners</a><a href="#/track">Track Application</a><a href="#/verify">Verify Certificate</a><a href="#/login">Student / Staff Login</a><a href="#/contact">Contact Us</a><a href="#/faq">FAQs</a><a href="#/privacy">Privacy Policy</a><a href="#/terms">Terms &amp; Conditions</a></div>
- <div><h4>Program Partners</h4><a href="#/partners"><b style="color:#fff">${FS.ORGS.grainzap.name}</b><br>Technology &amp; project partner</a><a href="#/partners"><b style="color:#fff">Growth Digital</b><br>Marketing &amp; growth partner</a></div></div>
- <div class="bot"><span>© ${new Date().getFullYear()} ${FS.ORGS.finsang.name}. All rights reserved.</span><span>Placement assistance is not a guarantee of employment.</span></div></div></footer>${FS.fab?FS.fab():''}`}
+ <div><h4>Program Partners</h4>${Object.keys(FS.ORGS).filter(k=>k!=='finsang').map(k=>`<a href="#/partners"><b style="color:#fff">${E(FS.ORGS[k].name)}</b><br>${E(FS.ORGS[k].role)}</a>`).join('')}</div></div>
+ <div class="bot"><span>© ${new Date().getFullYear()} ${E(FS.ORGS.finsang.name)}. All rights reserved.</span><span>Placement assistance is not a guarantee of employment.</span></div></div></footer>${FS.fab?FS.fab():''}`}
 
 /* ---------- Portal shell (student / trainer / admin) ---------- */
 FS.NAVG={student:[['Learn',['dashboard','programs','materials','videos']],['Practice',['assessments','assignments']],['Stay updated',['announcements','certificates','placement']]],
- admin:[['Overview',['overview']],['People',['students','staff','inbox']],['Learning',['programs','content','assessments']],['Outcomes',['certificates','placement','announcements']],['Insights',['reports','settings']]],
+ admin:[['Overview',['overview']],['People',['students','staff','inbox']],['Learning',['programs','content','assessments']],['Outcomes',['certificates','placement','announcements']],['Website',['website']],['Insights',['reports','settings']]],
  trainer:[['Teach',['overview','students','content']],['Evaluate',['assignments','assessments','attendance']]]};
 FS.ROLE={student:'Student Portal',trainer:'Mentor Panel',admin:'Admin Console'};
 FS.counts=role=>{const S=FS.state,u=FS.user(),o={};
@@ -76,7 +76,8 @@ FS.mountPortal=(role,page,title,html)=>{
 };
 A.col=()=>{const p=document.getElementById('portal');if(!p)return;p.classList.toggle('col');try{localStorage.setItem('fs_col',p.classList.contains('col')?'1':'0')}catch(e){}};
 A.drop=(id,e)=>{e.stopPropagation();document.querySelectorAll('.drop.show').forEach(d=>{if(d.id!==id)d.classList.remove('show')});const d=document.getElementById(id);if(d)d.classList.toggle('show')};
-document.addEventListener('click',e=>{if(!e.target.closest('.drop'))document.querySelectorAll('.drop.show').forEach(d=>d.classList.remove('show'))});
+document.addEventListener('click',e=>{if(!e.target.closest('.drop'))document.querySelectorAll('.drop.show').forEach(d=>d.classList.remove('show'));
+ document.querySelectorAll('body>.amm.ported').forEach(m=>{if(!m.contains(e.target)||e.target.closest('button'))setTimeout(()=>m.remove(),0)})});
 /* command palette */
 FS.palItems=()=>{const u=FS.user(),role=u&&u.role;if(!role||!FS.NAV[role])return[];const S=FS.state,o=[];
  FS.NAV[role].forEach(n=>o.push([n[1],n[2],'Go to page','#/'+role+'/'+n[0]]));

@@ -48,6 +48,7 @@ function buildState(user) {
   S.programs.sort((a, b) => (a.order || 0) - (b.order || 0));
   S.criteria = store.get('settings', 'criteria');
   S.site = store.get('settings', 'site');
+  S.content = store.get('settings', 'content') || {};
   S.watched = {}; S.certReq = []; S.users = [];
   if (user && user.role === 'student') {
     const w = store.get('watched', user.email); if (w) S.watched[user.email] = w.map;
@@ -169,6 +170,10 @@ app.post('/api/sync', A.requireUser, wrap((req, res) => {
     if (b.certReq) {
       if (u.role === 'student' && b.certReq.add) { if (!studentRec(u.email)) throw new acl.Deny('No enrollment.'); store.put('certReq', u.email, { id: u.email }); }
       if (u.role === 'admin') for (const e of (b.certReq.remove || [])) store.del('certReq', e);
+    }
+    if (b.content !== undefined) {
+      if (u.role !== 'admin') throw new acl.Deny('Only admins can change website content.');
+      store.put('settings', 'content', { id: 'content', ...acl.cleanSiteContent(b.content) });
     }
     if (b.criteria || b.site) {
       if (u.role !== 'admin') throw new acl.Deny('Only admins can change settings.');

@@ -27,18 +27,19 @@ FS.fileUrl=(id,dl)=>'/api/files/'+id+(dl?'?dl=1':'');
 
 /* ---- state ---- */
 const ARR=['programs','students','applications','submissions','results','certs','jobApps','interviews','attendanceLog','jobs','announcements','employers','messages'];
-const empty=()=>{const s={watched:{},certReq:[],users:[],criteria:{progress:80,score:60,attendance:75},site:{fee:0,email:'',phone:'',address:'',applicationsOpen:true}};ARR.forEach(k=>s[k]=[]);return s};
+const empty=()=>{const s={watched:{},certReq:[],users:[],criteria:{progress:80,score:60,attendance:75},site:{fee:0,email:'',phone:'',address:'',applicationsOpen:true},content:{}};ARR.forEach(k=>s[k]=[]);return s};
 FS.state=empty();FS.me=null;
 let snap={};
 const sj=JSON.stringify;
 function takeSnap(){
   snap={};ARR.forEach(k=>{snap[k]=new Map(FS.state[k].map(d=>[d.id,sj(d)]))});
-  snap.criteria=sj(FS.state.criteria);snap.site=sj(FS.state.site);
+  snap.criteria=sj(FS.state.criteria);snap.site=sj(FS.state.site);snap.content=sj(FS.state.content||{});
   snap.watched=FS.me?sj(FS.state.watched[FS.me.email]||{}):'';
   snap.certReq=FS.me?FS.state.certReq.includes(FS.me.email):false;
 }
 function applySite(){
   const f=FS.state.site.fee||0;FS.FEE=f;FS.feeText='₹'+f.toLocaleString('en-IN');
+  if(FS.applyContent)FS.applyContent();
 }
 FS.boot=async()=>{
   const r=await FS.api('GET','/api/bootstrap');
@@ -55,21 +56,22 @@ function diff(){
     if(up.length||del.length)ch[k]={upsert:up,del};next[k]=cur;
   });
   const out={};if(Object.keys(ch).length)out.changes=ch;
-  const crit=sj(FS.state.criteria),site=sj(FS.state.site);
+  const crit=sj(FS.state.criteria),site=sj(FS.state.site),cont=sj(FS.state.content||{});
   if(crit!==snap.criteria)out.criteria=FS.state.criteria;
   if(site!==snap.site)out.site=FS.state.site;
+  if(cont!==snap.content)out.content=FS.state.content||{};
   if(FS.me&&FS.me.role==='student'){
     const w=sj(FS.state.watched[FS.me.email]||{});if(w!==snap.watched)out.watched=FS.state.watched[FS.me.email]||{};
     const rq=FS.state.certReq.includes(FS.me.email);if(rq&&!snap.certReq)out.certReq={add:true};
   }
-  return {out,commit(){Object.assign(snap,next);snap.criteria=crit;snap.site=site;if(out.watched)snap.watched=sj(out.watched);if(out.certReq)snap.certReq=true}};
+  return {out,commit(){Object.assign(snap,next);snap.criteria=crit;snap.site=site;snap.content=cont;if(out.watched)snap.watched=sj(out.watched);if(out.certReq)snap.certReq=true}};
 }
 let chain=Promise.resolve();
 FS.save=()=>{
   chain=chain.then(async()=>{
     if(!FS.me)return;
     const d=diff();if(!Object.keys(d.out).length)return;
-    try{await FS.api('POST','/api/sync',d.out);d.commit();if(d.out.site)applySite()}
+    try{await FS.api('POST','/api/sync',d.out);d.commit();if(d.out.site||d.out.content)applySite()}
     catch(e){FS.err(e);if(e.status===401){FS.go('#/login');return}try{await FS.boot();FS.render(true)}catch(_){}}
   });
   return chain;
@@ -128,7 +130,7 @@ FS.closeModal=()=>{const m=document.getElementById('modal');if(m)m.remove()};
 FS.download=(name,text,type)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:type||'text/plain'}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)};
 FS.pct=(a,b)=>b?Math.round(a/b*100):0;
 FS.bar=p=>`<div class="bar"><i style="width:${p}%"></i></div>`;
-FS.logoOrg=(k,lg)=>{const o=FS.ORGS[k]||FS.ORGS.finsang;return `<span class="plogo ${lg?'lg':''}"><i style="background:${o.color}">${o.mono}</i><span>${o.short}</span></span>`};
+FS.logoOrg=(k,lg)=>{const o=FS.ORGS[k]||FS.ORGS.finsang,e=FS.esc;return `<span class="plogo ${lg?'lg':''}"><i style="background:${e(o.color)}">${e(o.mono||(o.short||o.name||'?')[0])}</i><span>${e(o.short||o.name)}</span></span>`};
 FS.certHtml=c=>`<div class="cert"><span class="wm">${c.demo?'SAMPLE / DEMO':'CERTIFICATE'}</span>
 <div style="font:700 .9rem system-ui;letter-spacing:.2em;color:#7a5a12">FINSANG INDIA DIGITAL SOLUTION PVT. LTD.</div>
 <h1>Certificate of Completion</h1><p>This is to certify that</p><div class="nm">${FS.esc(c.name)}</div>

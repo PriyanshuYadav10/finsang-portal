@@ -186,4 +186,34 @@ function validateDelete(user, coll, od) {
   deny('Not allowed.');
 }
 
-module.exports = { COLLS, Deny, canRead, outbound, validateWrite, validateDelete, clamp };
+
+/* ---------- editable website content (home, about, pricing, partners, FAQs, contact, legal, footer) ----------
+   Stored as one document (settings/content). Only the sections present in the input are kept, so an admin can
+   "reset" a section by omitting it; the public site falls back to its built-in defaults for missing sections. */
+function cleanSiteContent(c) {
+  c = c && typeof c === 'object' && !Array.isArray(c) ? c : {};
+  const t = (v, m) => str(v, m).trim();
+  const lst = (v, n, m) => arr(v).slice(0, n).map((x) => t(x, m)).filter(Boolean);
+  const pairs = (v, n, a, b) => arr(v).slice(0, n).map((x) => [t(arr(x)[0], a), t(arr(x)[1], b)]).filter((x) => x[0]);
+  const o = {};
+  if (c.announcement) o.announcement = { enabled: c.announcement.enabled !== false, text: t(c.announcement.text, 200), cta: t(c.announcement.cta, 40) };
+  if (c.hero) o.hero = { eyebrow: t(c.hero.eyebrow, 120), title: t(c.hero.title, 120), highlight: t(c.hero.highlight, 80), lead: t(c.hero.lead, 600) };
+  if (c.home) o.home = { progTitle: t(c.home.progTitle, 140), progSub: t(c.home.progSub, 240), whyTitle: t(c.home.whyTitle, 140), ctaTitle: t(c.home.ctaTitle, 140), ctaText: t(c.home.ctaText, 240) };
+  if (c.programsPage) o.programsPage = { title: t(c.programsPage.title, 100), sub: t(c.programsPage.sub, 240) };
+  if (c.about) o.about = { sub: t(c.about.sub, 240), intro: t(c.about.intro, 1500),
+    cards: arr(c.about.cards).slice(0, 6).map((x) => ({ icon: t(x && x.icon, 8), h: t(x && x.h, 80), p: t(x && x.p, 400) })).filter((x) => x.h) };
+  if (c.pricing) o.pricing = { title: t(c.pricing.title, 140), sub: t(c.pricing.sub, 240), includes: lst(c.pricing.includes, 14, 200), note: t(c.pricing.note, 80) };
+  if (Array.isArray(c.partners)) {
+    const seen = new Set();
+    o.partners = c.partners.slice(0, 8).map((p) => p || {}).map((p) => ({ id: t(p.id, 30).toLowerCase().replace(/[^a-z0-9-]/g, ''), name: t(p.name, 120), short: t(p.short, 40), mono: t(p.mono, 4),
+      color: /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#9a7a2e', role: t(p.role, 80), desc: t(p.desc, 500), contrib: lst(p.contrib, 8, 200) }))
+      .filter((p) => p.id && p.name && !seen.has(p.id) && seen.add(p.id));
+    if (!o.partners.length) delete o.partners;
+  }
+  if (Array.isArray(c.faqs)) o.faqs = pairs(c.faqs, 40, 300, 1500);
+  if (c.contact) o.contact = { sub: t(c.contact.sub, 240), hours: t(c.contact.hours, 120), note: t(c.contact.note, 240) };
+  if (c.legal) o.legal = { privacy: pairs(c.legal.privacy, 20, 120, 1500), terms: pairs(c.legal.terms, 20, 120, 1500) };
+  if (c.footer) o.footer = { about: t(c.footer.about, 320) };
+  return o;
+}
+module.exports = { cleanSiteContent, COLLS, Deny, canRead, outbound, validateWrite, validateDelete, clamp };

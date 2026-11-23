@@ -214,3 +214,40 @@ function validate_delete(array $user, string $coll, ?array $od): void {
   if (in_array($coll, ['applications', 'jobs', 'announcements', 'messages', 'employers', 'certs', 'jobApps', 'interviews', 'submissions', 'results', 'attendanceLog', 'programs'], true)) return;
   deny('Not allowed.');
 }
+
+/* ---------- editable website content (see server/acl.js cleanSiteContent) ---------- */
+function clean_site_content($c): array {
+  $c = is_array($c) && !array_is_list($c) ? $c : [];
+  $t = fn($v, $m) => trim(str($v, $m));
+  $lst = fn($v, $n, $m) => array_values(array_filter(array_map(fn($x) => $t($x, $m), array_slice(arr($v), 0, $n)), fn($x) => $x !== ''));
+  $pairs = fn($v, $n, $a, $b) => array_values(array_filter(array_map(function ($x) use ($t, $a, $b) { $x = arr($x); return [$t($x[0] ?? '', $a), $t($x[1] ?? '', $b)]; }, array_slice(arr($v), 0, $n)), fn($x) => $x[0] !== ''));
+  $g = fn($a, $k) => is_array($a) ? ($a[$k] ?? null) : null;
+  $o = [];
+  if (!empty($c['announcement']) && is_array($c['announcement'])) { $a = $c['announcement']; $o['announcement'] = ['enabled' => ($a['enabled'] ?? true) !== false, 'text' => $t($a['text'] ?? '', 200), 'cta' => $t($a['cta'] ?? '', 40)]; }
+  if (!empty($c['hero']) && is_array($c['hero'])) { $h = $c['hero']; $o['hero'] = ['eyebrow' => $t($h['eyebrow'] ?? '', 120), 'title' => $t($h['title'] ?? '', 120), 'highlight' => $t($h['highlight'] ?? '', 80), 'lead' => $t($h['lead'] ?? '', 600)]; }
+  if (!empty($c['home']) && is_array($c['home'])) { $h = $c['home']; $o['home'] = ['progTitle' => $t($h['progTitle'] ?? '', 140), 'progSub' => $t($h['progSub'] ?? '', 240), 'whyTitle' => $t($h['whyTitle'] ?? '', 140), 'ctaTitle' => $t($h['ctaTitle'] ?? '', 140), 'ctaText' => $t($h['ctaText'] ?? '', 240)]; }
+  if (!empty($c['programsPage']) && is_array($c['programsPage'])) { $h = $c['programsPage']; $o['programsPage'] = ['title' => $t($h['title'] ?? '', 100), 'sub' => $t($h['sub'] ?? '', 240)]; }
+  if (!empty($c['about']) && is_array($c['about'])) { $a = $c['about'];
+    $o['about'] = ['sub' => $t($a['sub'] ?? '', 240), 'intro' => $t($a['intro'] ?? '', 1500),
+      'cards' => array_values(array_filter(array_map(fn($x) => ['icon' => $t($g($x, 'icon'), 8), 'h' => $t($g($x, 'h'), 80), 'p' => $t($g($x, 'p'), 400)], array_slice(arr($a['cards'] ?? null), 0, 6)), fn($x) => $x['h'] !== ''))]; }
+  if (!empty($c['pricing']) && is_array($c['pricing'])) { $p = $c['pricing']; $o['pricing'] = ['title' => $t($p['title'] ?? '', 140), 'sub' => $t($p['sub'] ?? '', 240), 'includes' => $lst($p['includes'] ?? null, 14, 200), 'note' => $t($p['note'] ?? '', 80)]; }
+  if (isset($c['partners']) && is_array($c['partners'])) {
+    $seen = []; $out = [];
+    foreach (array_slice(array_values($c['partners']), 0, 8) as $p) {
+      if (!is_array($p)) continue;
+      $id = preg_replace('/[^a-z0-9-]/', '', strtolower($t($p['id'] ?? '', 30)));
+      $name = $t($p['name'] ?? '', 120);
+      if ($id === '' || $name === '' || isset($seen[$id])) continue;
+      $seen[$id] = 1;
+      $out[] = ['id' => $id, 'name' => $name, 'short' => $t($p['short'] ?? '', 40), 'mono' => $t($p['mono'] ?? '', 4),
+        'color' => (is_string($p['color'] ?? null) && preg_match('/^#[0-9a-f]{6}$/i', $p['color'])) ? $p['color'] : '#9a7a2e',
+        'role' => $t($p['role'] ?? '', 80), 'desc' => $t($p['desc'] ?? '', 500), 'contrib' => $lst($p['contrib'] ?? null, 8, 200)];
+    }
+    if ($out) $o['partners'] = $out;
+  }
+  if (isset($c['faqs']) && is_array($c['faqs'])) $o['faqs'] = $pairs($c['faqs'], 40, 300, 1500);
+  if (!empty($c['contact']) && is_array($c['contact'])) { $h = $c['contact']; $o['contact'] = ['sub' => $t($h['sub'] ?? '', 240), 'hours' => $t($h['hours'] ?? '', 120), 'note' => $t($h['note'] ?? '', 240)]; }
+  if (!empty($c['legal']) && is_array($c['legal'])) { $l = $c['legal']; $o['legal'] = ['privacy' => $pairs($l['privacy'] ?? null, 20, 120, 1500), 'terms' => $pairs($l['terms'] ?? null, 20, 120, 1500)]; }
+  if (!empty($c['footer']) && is_array($c['footer'])) $o['footer'] = ['about' => $t($c['footer']['about'] ?? '', 320)];
+  return $o;
+}

@@ -61,6 +61,17 @@ const start = async () => {
     ok((await call('admin', 'POST', '/api/admin/users', { name: 'T2', email: 't2@test.dev', role: 'trainer', password: 'trainer-pass-2', programs: ['digital-marketing'] })).s === 200, 'admin creates trainer');
     ok((await call('admin', 'POST', '/api/sync', { changes: { programs: { del: ['software-development'] } } })).s === 403, 'program with students cannot be deleted');
 
+    // website content (CMS)
+    const cmsBody = { content: { hero: { eyebrow: 'E', title: 'Hello world', highlight: 'Go', lead: 'L'.repeat(900) }, faqs: [['Q1?', 'A1'], ['', 'dropped'], ['Q2?', 'A2']],
+      partners: [{ id: 'Acme Co!', name: 'Acme', color: 'red', contrib: ['x', '', 'y'] }, { id: 'ACMECO', name: 'dup' }], about: { cards: [{ icon: '🎯', h: 'Mission', p: 'p' }, { h: '' }] }, evil: { a: 1 } } };
+    ok((await call('smoke', 'POST', '/api/sync', cmsBody)).s === 403, 'student cannot change website content');
+    ok((await call('admin', 'POST', '/api/sync', cmsBody)).s === 200, 'admin saves website content');
+    const pub = (await call('anon', 'GET', '/api/bootstrap')).d.state.content;
+    ok(pub && pub.hero.title === 'Hello world' && pub.hero.lead.length === 600, 'content is public and long text is clamped');
+    ok(pub.faqs.length === 2 && pub.partners.length === 1 && pub.partners[0].id === 'acmeco' && pub.partners[0].color === '#9a7a2e' && pub.partners[0].contrib.length === 2, 'FAQs/partners sanitised (empty dropped, ids slugged, bad colour reset)');
+    ok(pub.about.cards.length === 1 && pub.evil === undefined, 'unknown keys dropped');
+    ok((await call('admin', 'POST', '/api/sync', { content: {} })).s === 200 && Object.keys((await call('anon', 'GET', '/api/bootstrap')).d.state.content).join() === 'id', 'resetting content removes all overrides');
+
     const formPost = await fetch(base + '/api/sync', { method: 'POST', headers: { 'content-type': 'text/plain', cookie: jar.admin }, body: '{}' });
     ok(formPost.status === 415, 'non-JSON state-changing request rejected');
     const nf = async (u) => (await fetch(base + u)).headers.get('content-type') !== 'application/javascript' && !(await (await fetch(base + u)).text()).includes('require(');

@@ -43,6 +43,7 @@ function build_state(?array $user): array {
   usort($S['programs'], fn($a, $b) => ($a['order'] ?? 0) <=> ($b['order'] ?? 0));
   $S['criteria'] = store::get('settings', 'criteria');
   $S['site'] = store::get('settings', 'site');
+  $S['content'] = store::get('settings', 'content') ?: new stdClass;
   $S['watched'] = []; $S['certReq'] = []; $S['users'] = [];
   if ($user && $user['role'] === 'student') {
     $w = store::get('watched', $user['email']); if ($w) $S['watched'][$user['email']] = $w['map'];
@@ -181,6 +182,11 @@ route('POST', '/sync', function () use ($user) {
     if (is_array($cr)) {
       if ($user['role'] === 'student' && !empty($cr['add'])) { if (!student_of($user['email'])) deny('No enrollment.'); store::put('certReq', $user['email'], ['id' => $user['email']]); }
       if ($user['role'] === 'admin') foreach (arr($cr['remove'] ?? null) as $e) store::del('certReq', $e);
+    }
+    if (array_key_exists('content', $GLOBALS['body'])) {
+      if ($user['role'] !== 'admin') deny('Only admins can change website content.');
+      $cc = clean_site_content(B('content'));
+      store::put('settings', 'content', ['id' => 'content'] + $cc);
     }
     $crit = B('criteria'); $site = B('site');
     if (is_array($crit) || is_array($site)) {
