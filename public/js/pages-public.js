@@ -20,7 +20,7 @@ FS.stagger=root=>(root||document).querySelectorAll('.stg').forEach(p=>[...p.chil
 FS.reveal=()=>{FS.stagger();const els=[...document.querySelectorAll('.rv')];
  const run=el=>{el.classList.add('in');el.querySelectorAll('[data-count]').forEach(c=>{const to=+c.dataset.count,t0=performance.now();const step=t=>{const k=Math.min(1,(t-t0)/1200);c.textContent=Math.round(to*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)})};
  if(!('IntersectionObserver' in window)){els.forEach(e=>{e.classList.add('in');e.querySelectorAll('[data-count]').forEach(c=>c.textContent=c.dataset.count)});return}
- const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){run(en.target);io.unobserve(en.target)}}),{threshold:.12});
+ const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){run(en.target);io.unobserve(en.target)}}),{threshold:0,rootMargin:'0px 0px -6% 0px'});
  els.forEach(e=>io.observe(e))};
 /* scroll progress bar, sticky-nav shadow and hero parallax (bound once per page) */
 FS.chrome=()=>{if(window.__chrome)return;window.__chrome=1;
@@ -194,7 +194,12 @@ FS.route('/partners',()=>FS.mountPublic(`<section class="ph"><div class="wrap"><
  <h2 style="margin:30px 0 14px">Who contributes what</h2><div class="card tw"><table class="tbl"><tr><th>Area</th><th>Finsang</th><th>GrainZap</th><th>Growth Digital</th></tr>
  ${[['Curriculum & governance','●','○','○'],['Technology / software projects','○','●','○'],['Marketing, sales & e-commerce exposure','○','○','●'],['Mentorship & industry sessions','●','●','●'],['Certification','●','','' ],['Placement assistance','●','●','●']].map(r=>`<tr><td><b>${r[0]}</b></td>${r.slice(1).map(c=>`<td>${c==='●'?'<span class="tag g">Lead</span>':c==='○'?'<span class="tag m">Support</span>':'—'}</td>`).join('')}</tr>`).join('')}</table></div></div></section>`,'#/partners'));
 FS.route('/contact',()=>{const st=FS.state.site;page('Contact Us','We usually reply within 2 working days.',`<div class="grid g2"><div class="card"><h3>Send a message</h3><form onsubmit="return A.contact(event)" style="margin-top:14px"><div class="fg"><label>Name</label><input name="name" required maxlength="120"></div><div class="fg"><label>Email</label><input name="email" type="email" required></div><div class="fg"><label>Message</label><textarea name="message" required maxlength="3000"></textarea></div><button class="btn btn-p">Send Message</button></form></div>
- <div class="card"><h3>Get in touch</h3><p style="margin:12px 0"><b>${FS.ORGS.finsang.name}</b><br>Address: ${E(st.address)}<br>Email: ${E(st.email)}<br>Phone: ${E(st.phone)}</p></div></div>`,'#/contact')});
+ <div class="card ctc"><h3>Get in touch</h3><p class="hint" style="margin:4px 0 16px"><b>${FS.ORGS.finsang.name}</b></p>
+  <div class="ci"><i>📍</i><div><b>Address</b><span>${E(st.address)}</span></div></div>
+  <div class="ci"><i>✉️</i><div><b>Email</b><a href="mailto:${E(st.email)}">${E(st.email)}</a></div></div>
+  <div class="ci"><i>📞</i><div><b>Phone</b><span>${E(st.phone)}</span></div></div>
+  <div class="ci"><i>🕘</i><div><b>Response time</b><span>We usually reply within 2 working days</span></div></div>
+  <div class="ctc-n"><b>Prefer a call?</b><p>Request a call back and a counsellor will reach out.</p><button class="btn btn-a btn-sm" onclick="A.leadModal()">Request a call back →</button></div></div></div>`,'#/contact')});
 A.contact=async e=>{e.preventDefault();const f=e.target;try{await FS.api('POST','/api/contact',{name:f.name.value,email:f.email.value,message:f.message.value});f.reset();FS.toast('Message sent. Thank you!')}catch(x){FS.err(x)}return false};
 FS.route('/faq',()=>page('Frequently Asked Questions','Quick answers about the program.',faqHtml(FS.faqListF().concat(...FS.programs().map(p=>(p.faqs||[]).slice(0,1).map(f=>[p.name+': '+f[0],f[1]])))),'#/faq'));
 const legal=(t,items)=>page(t,'Please review these terms periodically.',`<div class="card">${items.map(i=>`<h3 style="margin:16px 0 6px">${i[0]}</h3><p>${i[1]}</p>`).join('')}</div>`);

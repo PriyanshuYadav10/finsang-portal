@@ -21,14 +21,44 @@ FS.route('/admin/(\\w+)',([pg])=>{
  FS.mountPortal('admin',pg,t[pg],pages[pg]());
 });
 
+/* ================= Dashboard widgets (shared by all three panels) ================= */
+FS.greet=()=>{const h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening'};
+FS.todayStr=()=>new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
+FS.ago=d=>{if(!d)return'';const n=Math.round((new Date(FS.day(0)+'T00:00:00')-new Date(d+'T00:00:00'))/864e5);return n<=0?'Today':n===1?'Yesterday':n<30?n+'d ago':FS.fmt(d)};
+FS.hero=(title,sub,actions,side)=>`<div class="dhero"><div class="mesh2"><i></i><i></i></div><div class="dh-l"><span class="pill dk">${FS.todayStr()}</span><h2>${title}</h2><p>${sub}</p><div class="dh-a">${actions}</div></div>${side?`<div class="dh-r">${side}</div>`:''}</div>`;
+FS.kpi=(icon,val,label,sub,href)=>`<${href?`a href="${href}"`:'div'} class="card kpi"><div class="kp-i">${icon}</div><div><b>${val}</b><span>${label}</span>${sub?`<small>${sub}</small>`:''}</div></${href?'a':'div'}>`;
+FS.hbars=rows=>`<div class="hbars">${rows.map(r=>`<div class="hb"><div class="hb-t"><span>${E(r[0])}</span><b>${r[1]}</b></div><div class="hb-b"><i style="width:${r[2]}%"></i></div></div>`).join('')}</div>`;
+FS.donut=(pct,label)=>`<div class="donut" style="--p:${pct}"><div><b>${pct}%</b><span>${label}</span></div></div>`;
+FS.feed=items=>items.length?`<div class="feed">${items.map(i=>`<div class="fi2"><i>${i[0]}</i><div><b>${i[1]}</b><small>${i[2]}</small></div><time>${i[3]}</time></div>`).join('')}</div>`:'<div class="empty">Nothing yet</div>';
+FS.seg=rows=>{const t=rows.reduce((a,r)=>a+r[1],0)||1;return `<div class="seg">${rows.map((r,i)=>`<i class="s${i}" style="flex:${r[1]/t}" title="${E(r[0])}: ${r[1]}"></i>`).join('')}</div><div class="seg-l">${rows.map((r,i)=>`<span><i class="s${i}"></i>${E(r[0])} <b>${r[1]}</b></span>`).join('')}</div>`};
+FS.qa=items=>`<div class="qa">${items.map(i=>`<a href="${i[2]}" ${i[3]?`onclick="${i[3]};return false"`:''}><i>${i[0]}</i><b>${i[1]}</b></a>`).join('')}</div>`;
+
 /* ================= Overview ================= */
-function aOver(){const S=FS.state,pend=S.applications.filter(a=>['Pending','Under Review'].includes(a.status)),unread=S.messages.filter(m=>!m.read).length;
- const toReview=S.submissions.filter(s=>s.status==='Submitted').length;
- return `<div class="grid g4" style="margin-bottom:22px">${stat('👥',S.students.length,'Registered students')}${stat('✅',S.students.filter(s=>s.status==='Active').length,'Active enrollments')}${stat('📥',pend.length,'Pending applications')}${stat('🏅',S.certs.length,'Certificates issued')}</div>
- <div class="grid g4" style="margin-bottom:22px">${stat('📝',toReview,'Submissions to evaluate')}${stat('🎖️',S.certReq.length,'Certificate requests')}${stat('✉️',unread,'Unread messages')}${stat('🧑‍🏫',S.users.filter(u=>u.role==='trainer').length,'Trainers')}</div>
- <div class="grid g2"><div class="card"><div class="ch-h"><h3>Applications awaiting review</h3><a class="btn btn-o btn-sm" href="#/admin/students">Manage</a></div>${pend.map(a=>`<div class="li"><div style="flex:1"><b>${E(a.name)}</b><br><span class="hint">${E(FS.pname(a.program))} · ${E(a.id)}</span></div><button class="btn btn-g btn-sm" onclick="A.approve('${a.id}')">Approve</button><button class="btn btn-o btn-sm" onclick="A.reject('${a.id}')">Reject</button></div>`).join('')||'<div class="empty">All caught up 🎉</div>'}</div>
- <div class="card"><h3 style="margin-bottom:6px">Enrollment by program</h3>${FS.chart(FS.programs().map(p=>[p.name.split(' ')[0],S.students.filter(s=>s.program===p.id).length,S.students.filter(s=>s.program===p.id).length*20]))}</div></div>
- <div class="card" style="margin-top:22px"><h3 style="margin-bottom:10px">Admission workflow</h3><div class="pill-row">${['Application','Admin review','Approval','Login access','Learning','Assessments','Certificate','Placement assistance'].map((s,i)=>`<span class="tag ${i<4?'a':'t'}">${i+1}. ${s}</span>`).join('')}</div></div>`}
+function aOver(){const S=FS.state,u=FS.user(),pend=S.applications.filter(a=>['Pending','Under Review'].includes(a.status)),unread=S.messages.filter(m=>!m.read).length;
+ const toReview=S.submissions.filter(s=>s.status==='Submitted').length,st=S.students,n=st.length||1;
+ const wk=FS.day(-7),newSt=st.filter(s=>s.joined>=wk).length,newAp=S.applications.filter(a=>a.date>=wk).length;
+ const paid=st.filter(s=>s.feeStatus==='Paid').length,paidPct=st.length?Math.round(paid/n*100):0,fee=+S.site.fee||0;
+ const avg=f=>st.length?Math.round(st.reduce((a,s)=>a+f(s),0)/n):0,avP=avg(FS.progressOf),avA=avg(s=>s.attendance),avS=avg(FS.scoreOf);
+ const byProg=FS.programs().map(p=>[p.name,st.filter(s=>s.program===p.id).length]),mx=Math.max(1,...byProg.map(x=>x[1]));
+ const stc=k=>S.applications.filter(a=>a.status===k).length;
+ const act=[...S.applications.map(a=>['📥',E(a.name)+' applied',E(FS.pname(a.program)),a.date]),...S.submissions.map(s=>['📤',E(s.name)+' submitted work',E(s.title),s.date]),
+  ...S.certs.map(c=>['🏅','Certificate issued to '+E(c.name),E(c.id),c.date]),...S.messages.map(m=>['✉️','Message from '+E(m.name),E(String(m.message).slice(0,54)),m.date]),
+  ...S.jobApps.map(j=>['💼',E(j.name)+' applied for a job',E((S.jobs.find(x=>x.id===j.jobId)||{}).title||''),j.date])].filter(x=>x[3]).sort((a,b)=>b[3].localeCompare(a[3])).slice(0,8).map(x=>[x[0],x[1],x[2],FS.ago(x[3])]);
+ const todo=[[toReview,'📝','submissions to evaluate','#/admin/assessments'],[pend.length,'📥','applications to review','#/admin/students'],[unread,'✉️','unread messages','#/admin/inbox'],[S.certReq.length,'🏅','certificate requests','#/admin/certificates']].filter(t=>t[0]);
+ return FS.hero(FS.greet()+', '+E(u.name.split(' ')[0])+' 👋','Here is what is happening across your programs today.',
+   `<a class="btn btn-a" href="#/admin/students">Review applications${pend.length?` (${pend.length})`:''}</a><a class="btn btn-w" href="#/admin/announcements">Post announcement</a>`,
+   `<div class="dh-stat"><b data-n="${st.length}">${st.length}</b><span>students enrolled</span></div>`)+`
+ <div class="grid g4 kpis">${FS.kpi('👥',st.length,'Registered students',`+${newSt} this week`,'#/admin/students')}${FS.kpi('📥',pend.length,'Pending applications',`+${newAp} this week`,'#/admin/students')}${FS.kpi('🏅',S.certs.length,'Certificates issued',S.certReq.length+' requested','#/admin/certificates')}${FS.kpi('💰','₹'+(paid*fee).toLocaleString('en-IN'),'Fees collected',paid+' of '+st.length+' paid','#/admin/students')}</div>
+ <div class="grid g3 dgrid">
+  <div class="card"><div class="ch-h"><h3>Enrollment by program</h3></div>${FS.hbars(byProg.map(x=>[x[0],x[1],Math.round(x[1]/mx*100)]))}</div>
+  <div class="card"><div class="ch-h"><h3>Learning health</h3></div><div class="donuts"><div>${FS.donut(avP,'Progress')}</div><div>${FS.donut(avA,'Attendance')}</div><div>${FS.donut(avS,'Avg score')}</div></div><p class="hint" style="text-align:center;margin-top:10px">Averages across all students</p></div>
+  <div class="card"><div class="ch-h"><h3>Fee collection</h3></div><div class="row" style="gap:18px">${FS.donut(paidPct,'paid')}<div style="flex:1"><div class="hint">Collected</div><b class="big">₹${(paid*fee).toLocaleString('en-IN')}</b><div class="hint" style="margin-top:8px">Pending</div><b>₹${((st.length-paid)*fee).toLocaleString('en-IN')}</b></div></div></div></div>
+ <div class="grid g2 dgrid">
+  <div class="card"><div class="ch-h"><h3>Application pipeline</h3></div>${FS.seg([['Pending',stc('Pending')],['Under review',stc('Under Review')],['Approved',stc('Approved')],['Rejected',stc('Rejected')]])}
+   <div class="ch-h" style="margin-top:22px"><h3>Awaiting review</h3><a class="btn btn-o btn-sm" href="#/admin/students">Manage</a></div>${pend.slice(0,5).map(a=>`<div class="li"><div class="av sm">${E(initials(a.name))}</div><div style="flex:1"><b>${E(a.name)}</b><br><span class="hint">${E(FS.pname(a.program))} · ${E(a.id)}</span></div><button class="btn btn-g btn-sm" onclick="A.approve('${a.id}')">Approve</button><button class="btn btn-o btn-sm" onclick="A.reject('${a.id}')">Reject</button></div>`).join('')||'<div class="empty">All caught up 🎉</div>'}</div>
+  <div class="card"><div class="ch-h"><h3>Recent activity</h3></div>${FS.feed(act)}</div></div>
+ <div class="grid g2 dgrid"><div class="card"><div class="ch-h"><h3>Needs your attention</h3></div>${todo.map(t=>`<a class="todo" href="${t[3]}"><i>${t[1]}</i><div><b>${t[0]}</b> ${t[2]}</div><em>→</em></a>`).join('')||'<div class="empty">Nothing urgent. Great job! ✨</div>'}</div>
+  <div class="card"><div class="ch-h"><h3>Quick actions</h3></div>${FS.qa([['➕','Add student','#/admin/students',"A.stuForm&&A.stuForm()"],['🎓','New program','#/admin/programs'],['🗂️','Add content','#/admin/content'],['🏅','Issue certificate','#/admin/certificates'],['💼','Post a job','#/admin/placement'],['📈','Export reports','#/admin/reports']])}</div></div>`}
 
 /* ================= Applications & students ================= */
 A.approve=async id=>{if(!confirm('Approve this application and create the student account?'))return;await call('POST','/api/admin/applications/'+id+'/approve',{},'Approved. Student account created')};
