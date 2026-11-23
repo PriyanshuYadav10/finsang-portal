@@ -13,11 +13,12 @@ FS.logo=()=>`<a href="#/" class="logo"><img src="img/logo.png" alt="Finsang"></a
 
 FS.mountPublic=(html,active)=>{
   const u=FS.user();
-  $app().innerHTML=`<header class="nav"><div class="wrap">${FS.logo()}<button class="burger" onclick="A.menu()" aria-label="Menu">☰</button>
-  <nav class="nav-links" id="navl">${PUB.map(l=>`<a href="${l[0]}" class="${active===l[0]?'on':''}">${l[1]}</a>`).join('')}
+  $app().innerHTML=`<div id="sprog"></div><header class="nav"><div class="wrap">${FS.logo()}<button class="burger" onclick="A.menu()" aria-label="Menu">☰</button>
+  <nav class="nav-links" id="navl">${PUB.map(l=>l[0]==='#/programs'?`<div class="dd"><a href="#/programs" class="${active==='#/programs'?'on':''}">Programs <small>▾</small></a><div class="ddm">${FS.programs().map(p=>`<a href="#/programs/${p.id}"><i style="background:${p.color}">${p.icon}</i><span><b>${E(p.name)}</b><small>${p.months} months · ${E(p.mode)}</small></span></a>`).join('')}<a href="#/programs" class="all">View all programs →</a></div></div>`:`<a href="${l[0]}" class="${active===l[0]?'on':''}">${l[1]}</a>`).join('')}
   <a href="${u?FS.homeFor(u.role):'#/login'}">${u?'My Dashboard':'Login / Register'}</a>
   <a href="#" onclick="A.enroll();return false" class="btn btn-p btn-sm" style="margin-left:6px">Enroll ${FS.feeText}</a></nav></div></header>
   <main class="view">${html}</main>${footer()}`;
+  if(FS.chrome)FS.chrome();
 };
 function footer(){const S=FS.state.site||{};return `<footer><div class="wrap"><div class="cols">
  <div><div class="logo" style="margin-bottom:12px"><img src="img/logo.png" alt="Finsang"></div>
