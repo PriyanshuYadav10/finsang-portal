@@ -65,7 +65,7 @@ FS.leadForm=(id,compact)=>`<form onsubmit="return A.lead(event)" id="${id}" clas
  <div class="frow"><div class="fg"><input name="name" placeholder="Full name *" required maxlength="120" autocomplete="name"></div><div class="fg"><input name="email" type="email" placeholder="Email address *" required autocomplete="email"></div></div>
  <div class="frow"><div class="fg"><input name="phone" type="tel" placeholder="Mobile number *" required pattern="[0-9+\\- ]{10,15}" autocomplete="tel"></div>
  <div class="fg"><select name="program" required><option value="">Preferred focus track *</option>${FS.programs().map(p=>`<option value="${E(p.id)}">${E(p.name)}</option>`).join('')}<option value="not-sure">Not sure yet</option></select></div></div>
- ${compact?'':`<label class="chk1"><input type="checkbox" required> I agree to be contacted about Finsang programs.</label>`}
+ ${compact?'':`<label class="chk1"><input type="checkbox" required><span>I agree to be contacted about Finsang programs.</span></label>`}
  <button class="btn btn-a btn-block">Request a Call Back <span class="ar">→</span></button></form>`;
 A.lead=async e=>{e.preventDefault();const f=e.target,b=f.querySelector('button');b.disabled=true;
  const pn=f.program.value==='not-sure'?'Not sure yet':FS.pname(f.program.value);
@@ -176,7 +176,7 @@ FS.applyForm=pid=>`<form onsubmit="return A.apply(event)" id="appf">
  <div class="fg"><label>Create password *</label><input name="pass" type="password" minlength="8" required autocomplete="new-password"><span class="hint">At least 8 characters. Used to log in after your application is approved.</span></div>
  <div class="fg"><label>Resume upload</label><input name="resume" type="file" accept=".pdf,.doc,.docx"><span class="hint">PDF or Word, up to 5 MB.</span></div>
  <div class="fg"><label>Additional information</label><textarea name="info" placeholder="Anything you'd like us to know"></textarea></div>
- <label style="font-weight:500;display:flex;gap:8px;align-items:flex-start"><input type="checkbox" required style="width:auto;margin-top:4px"> I agree to the <a href="#/terms" target="_blank">Terms</a> and <a href="#/privacy" target="_blank">Privacy Policy</a>.</label>
+ <label style="font-weight:500;display:flex;gap:8px;align-items:flex-start"><input type="checkbox" required style="width:auto;margin-top:4px"><span>I agree to the <a href="#/terms" target="_blank">Terms</a> and <a href="#/privacy" target="_blank">Privacy Policy</a>.</span></label>
  <button class="btn btn-p btn-block" style="margin-top:16px">Submit Application</button></form>`;
 A.apply=async e=>{e.preventDefault();const form=e.target,btn=form.querySelector('button.btn-block');const fd=new FormData(form);const f=Object.fromEntries(fd.entries());
  f.email=f.email.trim().toLowerCase();f.password=f.pass;delete f.pass;const file=fd.get('resume');delete f.resume;btn.disabled=true;

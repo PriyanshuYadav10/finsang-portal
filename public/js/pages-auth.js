@@ -3,7 +3,7 @@
 FS.authShell=(inner,wide)=>`<div class="auth2"><aside class="au-l"><div class="mesh2"><i></i><i></i><i></i></div><div class="au-in">
  <span class="pill dk">Finsang 360° Career Program</span><h2>Learn. Build. <em>Launch.</em></h2><p>One secure login for your learning portal, mentor panel or admin console.</p>
  <ul class="au-ul"><li><i>🎓</i><div><b>Five career tracks</b><span>Videos, quizzes and live projects</span></div></li><li><i>🏅</i><div><b>Verifiable certificates</b><span>A unique ID anyone can check</span></div></li><li><i>💼</i><div><b>Placement assistance</b><span>Mock interviews and partner openings</span></div></li></ul>
- <div class="au-fc"><div class="au-c1"><b>My Learning Progress</b><small>Sample · Month 2</small><div class="bar"><i style="width:62%"></i></div></div><div class="au-c2">🏅 Certificate ready</div></div></div></aside>
+ <div class="au-fc"><div class="au-c1"><b>My Learning Progress</b><small>Sample · Day 14</small><div class="bar"><i style="width:62%"></i></div></div><div class="au-c2">🏅 Certificate ready</div></div></div></aside>
  <div class="au-r"><div class="au-form ${wide?'wide':''}">${inner}</div></div></div>`;
 FS.route('/enter',()=>{FS.go('#/login')});
 FS.route('/login',(_,q)=>{

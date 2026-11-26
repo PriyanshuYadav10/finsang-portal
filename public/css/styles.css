@@ -726,3 +726,14 @@ footer .ct .mapl{display:block;margin:2px 0 0}
 @media(max-width:700px){.pgrid>.pc{flex-basis:100%}}
 /* forms: labels never push fields out of line */
 .frow{align-items:start}.fg label{line-height:1.3}.fg .hint{display:block;margin-top:5px;font-size:.78rem}
+
+/* auth pages */
+.au-l{align-items:flex-start}
+.au-in{position:sticky;top:130px;margin:0 auto 0 0;padding-bottom:40px}
+.auth2{min-height:calc(100vh - 80px)}
+@media(min-width:901px){.au-l{padding:70px 56px 60px 8vw}.au-r{align-items:start;padding-top:70px}.au-form{margin:0 auto}}
+/* Chrome autofill: keep inputs white, not pale blue */
+input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus,select:-webkit-autofill,textarea:-webkit-autofill{-webkit-box-shadow:0 0 0 100px #fff inset!important;box-shadow:0 0 0 100px #fff inset!important;-webkit-text-fill-color:var(--ink)!important;caret-color:var(--ink);transition:background-color 9999s}
+/* checkbox + inline link rows */
+label>span a{display:inline}label:has(>input[type=checkbox]){align-items:flex-start}
+.au-l{overflow:clip!important}
