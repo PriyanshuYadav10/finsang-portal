@@ -130,12 +130,14 @@ FS.closeModal=()=>{const m=document.getElementById('modal');if(m)m.remove()};
 FS.download=(name,text,type)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:type||'text/plain'}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)};
 FS.pct=(a,b)=>b?Math.round(a/b*100):0;
 FS.bar=p=>`<div class="bar"><i style="width:${p}%"></i></div>`;
-FS.logoOrg=(k,lg)=>{const o=FS.ORGS[k]||FS.ORGS.finsang,e=FS.esc;return `<span class="plogo ${lg?'lg':''}"><i style="background:${e(o.color)}">${e(o.mono||(o.short||o.name||'?')[0])}</i><span>${e(o.short||o.name)}</span></span>`};
+FS.logoOrg=(k,lg)=>{const o=FS.ORGS[k]||FS.ORGS.finsang,e=FS.esc,lbl=e(o.short||o.name);
+ const mark=o.logo?`<img src="${e(o.logo)}" alt="${lbl} logo" loading="lazy">`:`<i style="background:${e(o.color)}">${e(o.mono||(o.short||o.name||'?')[0])}</i>`;
+ return `<span class="plogo ${lg?'lg':''}">${mark}<span>${lbl}</span></span>`};
 FS.certHtml=c=>`<div class="cert"><span class="wm">${c.demo?'SAMPLE / DEMO':'CERTIFICATE'}</span>
 <div style="font:700 .9rem system-ui;letter-spacing:.2em;color:#7a5a12">FINSANG INDIA DIGITAL SOLUTION PVT. LTD.</div>
 <h1>Certificate of Completion</h1><p>This is to certify that</p><div class="nm">${FS.esc(c.name)}</div>
-<p>has successfully completed the <b>${FS.esc(FS.pname(c.pid))}</b> program of the<br>Skill Development &amp; Career Launch Program<br>with an overall assessment score of <b>${c.score}%</b>.</p>
-<p style="margin-top:14px;font:.85rem system-ui">In collaboration with GrainZap IT Solutions Pvt. Ltd. &amp; Growth Digital</p>
+<p>has successfully completed the <b>${FS.esc(FS.pname(c.pid))}</b> track of the<br>Finsang 360° Career Program<br>with an overall assessment score of <b>${c.score}%</b>.</p>
+<p style="margin-top:14px;font:.85rem system-ui">In collaboration with GrainZap IT Solutions Pvt. Ltd. &amp; Growtech E-commerce Service</p>
 <div class="ids"><span>Certificate ID: <b>${c.id}</b></span><span>Issued: ${FS.fmt(c.date)}</span><span>Verify at: ${location.origin}/verify.html</span></div></div>`;
 FS.printCert=c=>{FS.modal(`<h3>Certificate ${c.id}</h3>${FS.certHtml(c)}<div class="row" style="margin-top:16px"><button class="btn btn-p" onclick="window.print()">Download / Print as PDF</button><button class="btn btn-o" onclick="FS.closeModal()">Close</button></div><p class="hint" style="margin-top:8px">Choose "Save as PDF" in the print dialog.</p>`,true)};
 })();

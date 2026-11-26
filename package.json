@@ -7,6 +7,7 @@
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
     "seed:demo": "node server/seed.js --demo",
+    "seed:refresh": "node server/seed.js --refresh",
     "reset": "node server/seed.js --reset",
     "test": "node server/smoke-test.js",
     "build:php": "bash scripts/build-php.sh",

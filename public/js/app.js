@@ -6,7 +6,7 @@ const $app=()=>document.getElementById('app');
 const PUB=[['#/','Home'],['#/programs','Programs'],['#/about','About'],['#/partners','Partners'],['#/contact','Contact'],['#/faq','FAQ']];
 FS.NAV={
  student:[['dashboard','🏠','Dashboard'],['programs','🎓','My Programs'],['materials','📚','Learning Materials'],['videos','▶️','Video Learning'],['assessments','📝','Papers & Assessments'],['assignments','📤','Assignments'],['announcements','🔔','Announcements'],['certificates','🏅','Certificates'],['placement','💼','Placement']],
- admin:[['overview','📊','Overview'],['students','👥','Students & Applications'],['programs','🎓','Programs'],['content','🗂️','Learning Content'],['assessments','📝','Assessments'],['certificates','🏅','Certificates'],['placement','💼','Placement'],['announcements','📣','Announcements'],['staff','🧑‍🏫','Trainers & Staff'],['inbox','✉️','Messages'],['website','🌐','Website Content'],['reports','📈','Reports & Analytics'],['settings','⚙️','Settings']],
+ admin:[['overview','📊','Overview'],['students','👥','Students & Applications'],['programs','🎓','Programs'],['content','🗂️','Learning Content'],['assessments','📝','Assessments'],['certificates','🏅','Certificates'],['placement','💼','Placement'],['announcements','📣','Announcements'],['staff','🏫','Trainers & Staff'],['inbox','✉️','Messages'],['website','🌐','Website Content'],['reports','📈','Reports & Analytics'],['settings','⚙️','Settings']],
  trainer:[['overview','🏠','Overview'],['students','👥','My Students'],['content','🗂️','Study Materials & Videos'],['assignments','📤','Assignments & Reviews'],['assessments','📝','Assessments'],['attendance','🗓️','Attendance']]
 };
 FS.logo=()=>`<a href="#/" class="logo"><img src="img/logo.png" alt="Finsang"></a>`;
@@ -15,7 +15,7 @@ FS.mountPublic=(html,active)=>{
   const u=FS.user();
   $app().innerHTML=`<div id="sprog"></div><header class="nav"><div class="wrap">${FS.logo()}<button class="burger" onclick="A.menu()" aria-label="Menu">☰</button>
   <nav class="nav-links" id="navl">${PUB.map(l=>l[0]==='#/programs'?`<div class="dd"><a href="#/programs" class="${active==='#/programs'?'on':''}">Programs <small>▾</small></a><div class="ddm">${FS.programs().map(p=>`<a href="#/programs/${p.id}"><i style="background:${p.color}">${p.icon}</i><span><b>${E(p.name)}</b><small>${p.months} months · ${E(p.mode)}</small></span></a>`).join('')}<a href="#/programs" class="all">View all programs →</a></div></div>`:`<a href="${l[0]}" class="${active===l[0]?'on':''}">${l[1]}</a>`).join('')}
-  <a href="${u?FS.homeFor(u.role):'#/login'}">${u?'My Dashboard':'Login / Register'}</a>
+  <a href="${u?FS.homeFor(u.role):'#/login'}">${u?'My Dashboard':'Login / Register'}</a>${u?'':`<a href="#/track" class="${active==='#/track'?'on':''}">Track Application</a>`}
   <a href="#" onclick="A.enroll();return false" class="btn btn-p btn-sm" style="margin-left:6px">Enroll ${FS.feeText}</a></nav></div></header>
   <main class="view">${html}</main>${footer()}`;
   if(FS.chrome)FS.chrome();
@@ -24,10 +24,10 @@ FS.mountPublic=(html,active)=>{
 function footer(){const S=FS.state.site||{};return `<footer><div class="wrap"><div class="cols">
  <div><div class="logo" style="margin-bottom:12px"><img src="img/logo.png" alt="Finsang"></div>
  <p style="color:#bdbbb3;font-size:.88rem">${E(FS.ORGS.finsang.name)}. ${E(FS.C().footer.about)}</p>
- <div class="ct">${S.email?`<div>✉ <b>${E(S.email)}</b></div>`:''}${S.phone?`<div>📞 <b>${E(S.phone)}</b></div>`:''}${S.address?`<div>📍 ${E(S.address)}</div>`:''}</div>
+ <div class="ct">${S.email?`<div>✉ <a href="mailto:${E(S.email)}"><b>${E(S.email)}</b></a></div>`:''}${S.phone?`<div>📞 <a href="tel:${E(String(S.phone).replace(/[^\d+]/g,''))}"><b>${E(S.phone)}</b></a></div>`:''}${S.address?`<div>📍 <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(S.address)}" target="_blank" rel="noopener">${E(S.address)}</a> <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(S.address)}" target="_blank" rel="noopener" class="mapl">View on map ↗</a></div>`:''}</div>
  <a href="#" onclick="A.enroll();return false" class="apply">Apply now →</a></div>
- <div><h4>Our Programs</h4>${FS.programs().map(p=>`<a href="#/programs/${p.id}">${E(p.name)}</a>`).join('')}</div>
- <div><h4>Quick Links</h4><a href="#/about">About Us</a><a href="#/partners">Our Partners</a><a href="#/track">Track Application</a><a href="#/verify">Verify Certificate</a><a href="#/login">Student / Staff Login</a><a href="#/contact">Contact Us</a><a href="#/faq">FAQs</a><a href="#/privacy">Privacy Policy</a><a href="#/terms">Terms &amp; Conditions</a></div>
+ <div><h4>Career Tracks</h4>${FS.programs().map(p=>`<a href="#/programs/${p.id}">${E(p.name)}</a>`).join('')}</div>
+ <div><h4>Quick Links</h4><a href="#/about">About Us</a><a href="#/partners">Our Partners</a><a href="#/founder">Founder Sprint</a><a href="#/track">Track Application</a><a href="#/verify">Verify Certificate</a><a href="#/login">Student / Staff Login</a><a href="#/contact">Contact Us</a><a href="#/faq">FAQs</a><a href="#/privacy">Privacy Policy</a><a href="#/terms">Terms &amp; Conditions</a></div>
  <div><h4>Program Partners</h4>${Object.keys(FS.ORGS).filter(k=>k!=='finsang').map(k=>`<a href="#/partners"><b style="color:#fff">${E(FS.ORGS[k].name)}</b><br>${E(FS.ORGS[k].role)}</a>`).join('')}</div></div>
  <div class="bot"><span>© ${new Date().getFullYear()} ${E(FS.ORGS.finsang.name)}. All rights reserved.</span><span>Placement assistance is not a guarantee of employment.</span></div></div></footer>${FS.fab?FS.fab():''}`}
 
@@ -65,7 +65,7 @@ FS.mountPortal=(role,page,title,html)=>{
   <div class="uc"><div class="av">${E(initials(u.name))}</div><div><b>${E(u.name)}</b><small>${E(u.email)}</small></div></div></div></aside>
   <div class="pmain"><div class="ptop"><button class="msb" onclick="A.sb()" aria-label="Menu">☰</button>
    <div class="ttl"><div class="crumb2">${FS.ROLE[role]} <i>/</i> ${E(title)}</div><h2>${E(title)}</h2></div>
-   <div class="sp">${role==='student'?`<select class="sw" onchange="A.switchProg(this.value)" title="Switch program">${FS.programs().map(p=>`<option value="${p.id}" ${FS.studentRec(u.email)&&FS.studentRec(u.email).program===p.id?'selected':''}>${FS.esc(p.name)}</option>`).join('')}</select>`:''}
+   <div class="sp">${role==='student'?`<select class="sw" onchange="A.switchProg(this.value)" title="Focus track">${FS.programs().map(p=>`<option value="${p.id}" ${FS.studentRec(u.email)&&FS.studentRec(u.email).program===p.id?'selected':''}>${FS.esc(p.name)}</option>`).join('')}</select>`:''}
    <button class="tb-search" onclick="A.pal()"><span>🔍</span><em>Search</em><kbd>⌘K</kbd></button>
    <div class="tb-wrap"><button class="tb-btn" onclick="A.drop('np',event)" aria-label="Notifications">🔔${unreadN?`<b class="bdg">${unreadN}</b>`:''}</button>
     <div class="drop" id="np"><div class="dh"><b>Notifications</b><span class="hint">${unreadN} item${unreadN===1?'':'s'}</span></div>${notes.map(n=>`<a class="di" href="${n[3]}"><i>${n[0]}</i><div><b>${E(n[1])}</b>${n[2]?`<small>${E(n[2])}</small>`:''}</div>${n[4]?`<time>${FS.fmt(n[4])}</time>`:''}</a>`).join('')||'<div class="empty" style="padding:26px">You are all caught up ✨</div>'}</div></div>
@@ -139,7 +139,17 @@ window.addEventListener('DOMContentLoaded',()=>FS.boot().then(()=>FS.render()).c
 A.enter=()=>FS.go('#/login');
 A.enroll=(pid)=>{
   if(!FS.state.site.applicationsOpen){FS.modal(`<h3>Applications closed</h3><p>New applications are not being accepted right now. Please check back soon or <a href="#/contact">contact us</a>.</p><div class="row" style="margin-top:14px"><button class="btn btn-o" onclick="FS.closeModal()">Close</button></div>`);return}
-  FS.modal(`<h3>Apply for the Skill Program</h3><div class="price" style="grid-template-columns:1fr;padding:18px;margin-bottom:14px"><div class="amt">${FS.feeText}</div><p>One-time fee · access to all ${FS.programs().length} programs · payable after your application is approved</p></div>${FS.applyForm(pid||'')}`,true)};
+  FS.modal(`<h3>Apply for the 360° Career Program</h3><div class="price" style="grid-template-columns:1fr;padding:18px;margin-bottom:14px"><div class="amt">${FS.feeText}</div><p>One-time fee · all ${FS.programs().length} career tracks within 3 months · payable after your application is approved</p></div>${FS.applyForm(pid||'')}`,true)};
 A.pwForm=()=>FS.modal(`<h3>Change password</h3><form onsubmit="return A.pwSave(event)"><div class="fg"><label>Current password</label><input name="c" type="password" required autocomplete="current-password"></div><div class="fg"><label>New password (min 8 characters)</label><input name="n" type="password" minlength="8" required autocomplete="new-password"></div><div class="row"><button class="btn btn-p">Update password</button><button type="button" class="btn btn-o" onclick="FS.closeModal()">Cancel</button></div></form>`);
 A.pwSave=async e=>{e.preventDefault();try{await FS.api('POST','/api/password',{current:e.target.c.value,password:e.target.n.value});FS.closeModal();FS.toast('Password updated')}catch(x){FS.err(x)}return false};
-A.switchProg=pid=>{const r=FS.studentRec(FS.user().email);if(r){r.program=pid;FS.save();FS.toast('Switched to '+FS.pname(pid));FS.render(true)}};
+A.switchProg=pid=>{const r=FS.studentRec(FS.user().email);if(r){r.program=pid;FS.save();FS.toast('Focus track changed to '+FS.pname(pid));FS.render(true)}};
+
+/* ---------- show / hide password toggle for every password field ---------- */
+FS.eyes=(root)=>(root||document).querySelectorAll('input[type=password]:not([data-eye])').forEach(i=>{i.setAttribute('data-eye','1');
+ const w=document.createElement('span');w.className='pw';i.parentNode.insertBefore(w,i);w.appendChild(i);
+ const b=document.createElement('button');b.type='button';b.className='eye';b.setAttribute('aria-label','Show password');b.title='Show password';
+ const ico=on=>on?'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 5.1A10.9 10.9 0 0 1 12 5c6 0 9.5 7 9.5 7a17 17 0 0 1-3.1 4M6.6 6.6C3.9 8.4 2.5 12 2.5 12S6 19 12 19c1.6 0 3-.4 4.200-1M9.900 9.900a3 3 0 0 0 4.200 4.200"/></svg>':'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.500 12S6 5 12 5s9.500 7 9.500 7-3.500 7-9.500 7S2.500 12 2.500 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+ b.innerHTML=ico(false);
+ b.onclick=()=>{const show=i.type==='password';i.type=show?'text':'password';b.innerHTML=ico(show);b.setAttribute('aria-label',show?'Hide password':'Show password');b.title=show?'Hide password':'Show password'};
+ w.appendChild(b)});
+new MutationObserver(()=>FS.eyes()).observe(document.documentElement,{childList:true,subtree:true});

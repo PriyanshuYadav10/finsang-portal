@@ -3,6 +3,7 @@ const { db, store, users, DATA_DIR } = require('./db');
 const { hashPassword } = require('./auth');
 const SD = require('./seed-data');
 
+const SITE = { fee: 19999, email: 'info@finsang.in', phone: '+91 9929760623', address: 'Finsang India Digital Solution Pvt. Ltd., Jaipur, Rajasthan' };
 const day = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
 const uid = (p) => p + Math.random().toString(36).slice(2, 7).toUpperCase();
 
@@ -24,7 +25,7 @@ function convertProgram(p, i) {
 function seedBase() {
   if (store.count('programs') === 0) SD.PROGRAMS.forEach((p, i) => store.put('programs', p.id, convertProgram(p, i)));
   if (!store.get('settings', 'site')) store.put('settings', 'site', {
-    id: 'site', fee: 17999, email: 'info@finsang.example', phone: '+91 00000 00000', address: 'Address to be updated, India', applicationsOpen: true
+    id: 'site', fee: SITE.fee, email: SITE.email, phone: SITE.phone, address: SITE.address, applicationsOpen: true
   });
   if (!store.get('settings', 'criteria')) store.put('settings', 'criteria', { id: 'criteria', progress: 80, score: 60, attendance: 75 });
   if (users.countRole('admin') === 0) {
@@ -68,11 +69,19 @@ function seedDemo() {
   put('jobApps', { id: 'JA1', email: 'student@finsang.demo', name: 'Aarav Sharma', jobId: 'J2', date: day(-3), status: 'Shortlisted' });
   [['N1', 'Class Schedule', 'Live session: REST API design', 'Join the live class this Friday at 5:00 PM. Link will be shared 15 minutes before.', -1, 'all'],
    ['N2', 'Deadline', 'Assignment 3 due soon', 'REST API for a Library is due soon. Upload your work or share a repository link.', -2, 'software-development'],
-   ['N3', 'Examination', 'Month 2 assessment scheduled', 'The Month 2 MCQ assessment opens next week. Practice with the mock test first.', -3, 'all'],
+   ['N3', 'Examination', 'Sprint 2 assessment scheduled', 'The Sprint 2 practice assessment opens next week. Practice with the mock test first.', -3, 'all'],
    ['N4', 'Placement', 'New openings from partners', 'Partner openings are now listed in the Placement section. Placement assistance is not a guarantee of employment.', -4, 'all'],
    ['N5', 'Program Update', 'Industry session with partner mentors', 'Industry mentors from our partner organizations will host an open Q&A next week.', -6, 'all']]
     .forEach((a) => put('announcements', { id: a[0], type: a[1], title: a[2], body: a[3], date: day(a[4]), prog: a[5], by: 'admin' }));
   console.log('Demo data added. Demo logins: admin@finsang.demo/admin123, trainer@finsang.demo/trainer123, student@finsang.demo/demo123');
+}
+
+/* `--refresh`: bring an existing database in line with the current seed content (tracks, fee, contact) without touching students or activity. */
+function refreshContent() {
+  SD.PROGRAMS.forEach((p, i) => store.put('programs', p.id, convertProgram(p, i)));
+  store.put('settings', 'site', { ...(store.get('settings', 'site') || { id: 'site', applicationsOpen: true }), id: 'site', ...SITE });
+  SD.JOBS.forEach((j) => { if (store.get('jobs', j.id)) store.put('jobs', j.id, j); });
+  console.log('Programs, fee and contact details refreshed.');
 }
 
 function run(argv) {
@@ -81,6 +90,7 @@ function run(argv) {
     console.log('Database wiped in', DATA_DIR);
   }
   seedBase();
+  if (argv.includes('--refresh')) refreshContent();
   if (argv.includes('--demo')) seedDemo();
 }
 module.exports = { seedBase, seedDemo, run, day };

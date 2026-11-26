@@ -5,7 +5,7 @@ require_once __DIR__ . '/auth.php';
 function seed_base(string $adminEmail, string $adminPass, string $adminName = 'Administrator'): void {
   $base = jdec(file_get_contents(dirname(__DIR__) . '/seed/base.json'));
   if (store::count('programs') === 0) foreach ($base['programs'] as $p) store::put('programs', $p['id'], $p);
-  if (!store::get('settings', 'site')) store::put('settings', 'site', ['id' => 'site', 'fee' => 17999, 'email' => 'info@finsang.example', 'phone' => '+91 00000 00000', 'address' => 'Address to be updated, India', 'applicationsOpen' => true]);
+  if (!store::get('settings', 'site')) store::put('settings', 'site', ['id' => 'site', 'fee' => 19999, 'email' => 'info@finsang.in', 'phone' => '+91 9929760623', 'address' => 'Finsang India Digital Solution Pvt. Ltd., Jaipur, Rajasthan', 'applicationsOpen' => true]);
   if (!store::get('settings', 'criteria')) store::put('settings', 'criteria', ['id' => 'criteria', 'progress' => 80, 'score' => 60, 'attendance' => 75]);
   if (users::countRole('admin') === 0) users::create(strtolower($adminEmail), $adminName, 'admin', [], hash_password($adminPass));
 }

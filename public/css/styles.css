@@ -662,3 +662,17 @@ input:hover,select:hover,textarea:hover{border-color:#cfc6a6}
 
 .mono{white-space:nowrap}.srch{min-width:340px}.tbl-fix td:nth-child(3){min-width:150px}
 @media(max-width:600px){.srch{min-width:0}}
+
+/* ---- QA round: logos, password eye, footer links, centring, sidebar fixes ---- */
+.plogo img{width:44px;height:44px;border-radius:12px;object-fit:contain;background:#11110f;flex:none}.plogo.lg img{width:64px;height:64px;border-radius:16px}
+.pw{position:relative;display:block}.pw input{padding-right:46px!important;width:100%}
+.eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:38px;height:38px;display:grid;place-items:center;background:none;border:0;color:#6f6d66;cursor:pointer;padding:0}.eye:hover{color:#11110f}
+footer .ct a{color:inherit;text-decoration:none}footer .ct a:hover{color:var(--gold-bright);text-decoration:underline}footer .ct .mapl{display:inline-block;margin-left:6px;font-size:.78rem;color:var(--gold-bright)}
+/* sidebar: centred logo + role pill, no emoji bleed */
+.sb .logo{justify-content:center!important}
+.sb .role-pill{align-self:center;display:block}
+.sb nav a span,.sbf a span,.colbtn span{display:inline-block;overflow:hidden;line-height:1;white-space:nowrap}
+/* public pages: centre headings, intro text and tables */
+.ph>.wrap{text-align:center}
+.view .sec>.wrap>h2,.view .sec>.wrap>h3,.view .sec>.wrap>.hint,.view .sec h2.center{text-align:center}
+@media(min-width:761px){.sec .tbl th,.sec .tbl td{text-align:center}.sec .tbl td>div{text-align:center}}
