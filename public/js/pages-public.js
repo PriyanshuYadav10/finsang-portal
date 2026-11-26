@@ -5,7 +5,8 @@ FS.programCard=p=>`<div class="card pc"><div class="top"><div class="pi" style="
 <div class="meta"><span class="tag">⏱ ${p.months} months</span><span class="tag g">${p.mode}</span></div>
 <div class="lbl">Key skills</div><div class="meta">${(p.skills||[]).slice(0,5).map(s=>`<span class="tag m">${E(s)}</span>`).join('')}</div>
 <div class="lbl">Career opportunities</div><p style="font-size:.85rem">${(p.careers||[]).slice(0,3).map(E).join(' · ')}</p>
-<div class="act"><a class="btn btn-o" href="#/programs/${p.id}">View Details</a><a class="btn btn-p" href="#" onclick="A.enroll('${p.id}');return false">Enroll Now</a></div></div>`;
+<div class="lbl">Fee</div><p style="font-size:.85rem"><b>✓ Included in the one-time ${FS.feeText} fee</b> · one of all ${FS.programs().length} tracks</p>
+<div class="act"><a class="btn btn-o" href="#/programs/${p.id}">View Details</a><a class="btn btn-p" href="#" onclick="A.enroll('${p.id}');return false">Apply · All Tracks</a></div></div>`;
 
 /* ---------- editable website content: built-in defaults + admin overrides (Admin -> Website Content) ---------- */
 FS.ORGS0=FS.ORGS0||JSON.parse(JSON.stringify(FS.ORGS));
@@ -152,7 +153,7 @@ FS.route('/programs',()=>{
  const all=FS.programs();const list=all.filter(p=>(!f.q||(p.name+p.short+p.skills.join(' ')).toLowerCase().includes(f.q.toLowerCase()))&&(!f.cat||p.cat===f.cat)&&(!f.dur||String(p.months)===f.dur)&&(!f.mode||p.mode===f.mode));
  const opt=(arr,v)=>arr.map(a=>`<option ${v===String(a)?'selected':''}>${a}</option>`).join('');
  FS.mountPublic(`<section class="ph"><div class="wrap"><h1>${E(FS.fx(FS.C().programsPage.title))}</h1><p style="margin-top:8px">${E(FS.fx(FS.C().programsPage.sub))}</p></div></section>
- <section class="sec" style="padding-top:36px"><div class="wrap"><div class="filters">
+ <section class="sec" style="padding-top:36px"><div class="wrap"><div class="alert s" style="margin-bottom:18px"><b>One fee, all ${all.length} tracks.</b> Your single ${FS.feeText} payment unlocks every track below. The focus track you choose only shapes your final capstone, and you can change it later.</div><div class="filters">
  <input id="pq" placeholder="🔍 Search programs or skills…" value="${E(f.q)}" oninput="A.pf('q',this.value)">
  <select onchange="A.pf('cat',this.value)"><option value="">All categories</option>${opt([...new Set(all.map(p=>p.cat))],f.cat)}</select>
  <select onchange="A.pf('dur',this.value)"><option value="">Any duration</option>${[...new Set(all.map(p=>p.months))].sort().map(m=>`<option value="${m}" ${f.dur==m?'selected':''}>${m} months</option>`).join('')}</select>
@@ -171,7 +172,7 @@ FS.applyForm=pid=>`<form onsubmit="return A.apply(event)" id="appf">
  <div class="frow"><div class="fg"><label>Mobile number *</label><input name="phone" required pattern="[0-9+\\- ]{10,15}" title="Enter a valid mobile number"></div><div class="fg"><label>City *</label><input name="city" required></div></div>
  <div class="frow"><div class="fg"><label>College / university *</label><input name="college" required></div><div class="fg"><label>Qualification *</label><select name="qualification" required><option value="">Select</option><option>12th Pass</option><option>Diploma</option><option>B.Tech / B.E.</option><option>BCA / MCA</option><option>B.Com / M.Com</option><option>BBA / MBA</option><option>BA / MA</option><option>B.Sc / M.Sc</option><option>Other</option></select></div></div>
  <div class="frow"><div class="fg"><label>Graduation year *</label><select name="year" required><option value="">Select</option>${[2023,2024,2025,2026,2027,2028].map(y=>`<option>${y}</option>`).join('')}</select></div>
- <div class="fg"><label>Choose your focus track *</label><select name="program" required>${FS.programs().map(p=>`<option value="${p.id}" ${p.id===pid?'selected':''}>${E(p.name)}</option>`).join('')}</select></div></div>
+ <div class="fg"><label>Choose your focus track * <span class="hint">(all five tracks are included)</span></label><select name="program" required>${FS.programs().map(p=>`<option value="${p.id}" ${p.id===pid?'selected':''}>${E(p.name)}</option>`).join('')}</select></div></div>
  <div class="fg"><label>Create password *</label><input name="pass" type="password" minlength="8" required autocomplete="new-password"><span class="hint">At least 8 characters. Used to log in after your application is approved.</span></div>
  <div class="fg"><label>Resume upload</label><input name="resume" type="file" accept=".pdf,.doc,.docx"><span class="hint">PDF or Word, up to 5 MB.</span></div>
  <div class="fg"><label>Additional information</label><textarea name="info" placeholder="Anything you'd like us to know"></textarea></div>
@@ -211,7 +212,7 @@ FS.route('/programs/([\\w-]+)',([id])=>{
  <div class="blk" id="s-eligibility"><h2>Eligibility Criteria</h2><ul class="chk">${(p.eligibility||[]).map(t=>`<li>${E(t)}</li>`).join('')}</ul></div>
  <div class="blk" id="s-faq"><h2>Frequently Asked Questions</h2>${faqHtml(p.faqs||[])}</div>
  </div>
- <aside class="side"><div class="card" id="s-apply"><span class="eyebrow">One-time fee</span><div style="font:700 2.4rem 'Playfair Display',serif;color:var(--navy)">${FS.feeText}</div><p style="margin:6px 0 14px">Pay once and unlock <b>all ${FS.programs().length} programs</b>, including ${E(p.name)}.</p><ul class="chk" style="font-size:.9rem;margin-bottom:16px"><li>${p.months}-month guided learning</li><li>Assignments &amp; live project</li><li>Certificate on completion</li><li>Placement assistance</li></ul><button class="btn btn-p btn-block" onclick="A.enroll('${p.id}')">Enroll Now</button></div></aside></div></div></section>`,'#/programs');
+ <aside class="side"><div class="card" id="s-apply"><span class="eyebrow">One-time fee</span><div style="font:700 2.4rem 'Playfair Display',serif;color:var(--navy)">${FS.feeText}</div><p style="margin:6px 0 14px">Pay once and unlock <b>all ${FS.programs().length} programs</b>, including ${E(p.name)}.</p><ul class="chk" style="font-size:.9rem;margin-bottom:16px"><li>All ${FS.programs().length} tracks within ${p.months} months</li><li>Assignments &amp; live project</li><li>Certificate on completion</li><li>Placement assistance</li></ul><button class="btn btn-p btn-block" onclick="A.enroll('${p.id}')">Apply for All ${FS.programs().length} Tracks</button></div></aside></div></div></section>`,'#/programs');
 });
 
 /* Static pages */

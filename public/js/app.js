@@ -65,7 +65,7 @@ FS.mountPortal=(role,page,title,html)=>{
   <div class="uc"><div class="av">${E(initials(u.name))}</div><div><b>${E(u.name)}</b><small>${E(u.email)}</small></div></div></div></aside>
   <div class="pmain"><div class="ptop"><button class="msb" onclick="A.sb()" aria-label="Menu">☰</button>
    <div class="ttl"><div class="crumb2">${FS.ROLE[role]} <i>/</i> ${E(title)}</div><h2>${E(title)}</h2></div>
-   <div class="sp">${role==='student'?`<select class="sw" onchange="A.switchProg(this.value)" title="Focus track">${FS.programs().map(p=>`<option value="${p.id}" ${FS.studentRec(u.email)&&FS.studentRec(u.email).program===p.id?'selected':''}>${FS.esc(p.name)}</option>`).join('')}</select>`:''}
+   <div class="sp">${role==='student'?`<select class="sw" onchange="A.switchProg(this.value)" title="Open a track">${FS.programs().map(p=>`<option value="${p.id}" ${FS.studentRec(u.email)&&FS.studentRec(u.email).program===p.id?'selected':''}>${FS.esc(p.name)}</option>`).join('')}</select>`:''}
    <button class="tb-search" onclick="A.pal()"><span>🔍</span><em>Search</em><kbd>⌘K</kbd></button>
    <div class="tb-wrap"><button class="tb-btn" onclick="A.drop('np',event)" aria-label="Notifications">🔔${unreadN?`<b class="bdg">${unreadN}</b>`:''}</button>
     <div class="drop" id="np"><div class="dh"><b>Notifications</b><span class="hint">${unreadN} item${unreadN===1?'':'s'}</span></div>${notes.map(n=>`<a class="di" href="${n[3]}"><i>${n[0]}</i><div><b>${E(n[1])}</b>${n[2]?`<small>${E(n[2])}</small>`:''}</div>${n[4]?`<time>${FS.fmt(n[4])}</time>`:''}</a>`).join('')||'<div class="empty" style="padding:26px">You are all caught up ✨</div>'}</div></div>
@@ -142,7 +142,7 @@ A.enroll=(pid)=>{
   FS.modal(`<h3>Apply for the 360° Career Program</h3><div class="price" style="grid-template-columns:1fr;padding:18px;margin-bottom:14px"><div class="amt">${FS.feeText}</div><p>One-time fee · all ${FS.programs().length} career tracks within 3 months · payable after your application is approved</p></div>${FS.applyForm(pid||'')}`,true)};
 A.pwForm=()=>FS.modal(`<h3>Change password</h3><form onsubmit="return A.pwSave(event)"><div class="fg"><label>Current password</label><input name="c" type="password" required autocomplete="current-password"></div><div class="fg"><label>New password (min 8 characters)</label><input name="n" type="password" minlength="8" required autocomplete="new-password"></div><div class="row"><button class="btn btn-p">Update password</button><button type="button" class="btn btn-o" onclick="FS.closeModal()">Cancel</button></div></form>`);
 A.pwSave=async e=>{e.preventDefault();try{await FS.api('POST','/api/password',{current:e.target.c.value,password:e.target.n.value});FS.closeModal();FS.toast('Password updated')}catch(x){FS.err(x)}return false};
-A.switchProg=pid=>{const r=FS.studentRec(FS.user().email);if(r){r.program=pid;FS.save();FS.toast('Focus track changed to '+FS.pname(pid));FS.render(true)}};
+A.switchProg=pid=>{const r=FS.studentRec(FS.user().email);if(r){r.program=pid;FS.save();FS.toast('Now viewing '+FS.pname(pid));FS.render(true)}};
 
 /* ---------- show / hide password toggle for every password field ---------- */
 FS.eyes=(root)=>(root||document).querySelectorAll('input[type=password]:not([data-eye])').forEach(i=>{i.setAttribute('data-eye','1');
