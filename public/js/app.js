@@ -100,7 +100,7 @@ const countUp=el=>{const m=/^(\D*)(\d[\d,]*)(\D*)$/.exec(el.textContent.trim());
 FS.polish=()=>{const q=FS.quiet,idx=(sel,skipGrid)=>document.querySelectorAll(sel).forEach(p=>[...p.children].forEach((c,i)=>{c.style.setProperty('--i',Math.min(i,14));if(!q&&!(skipGrid&&c.classList.contains('grid')))c.classList.add('fx')}));
  idx('.pbody',true);idx('.pbody .grid');idx('.chart');idx('.tbl tbody');idx('.feed');idx('.hbars');
  if(!q)document.querySelectorAll('.pbody .stat b,.pbody .kpi b').forEach(countUp)};
-FS.polishPub=()=>{document.querySelectorAll('.view .ph>.wrap').forEach(w=>{if(w.querySelector('.crumbs'))return;const h=w.querySelector('h1');if(!h)return;const n=document.createElement('nav');n.className='crumbs';n.innerHTML='<a href="#/">Home</a><i>/</i><span>'+h.textContent.replace(/</g,'&lt;')+'</span>';w.insertBefore(n,w.firstChild);FS.fixLinks(n)});
+FS.polishPub=()=>{document.querySelectorAll('.view .ph>.wrap').forEach(w=>{if(w.querySelector('.crumbs,.crumb'))return;const h=w.querySelector('h1');if(!h)return;const n=document.createElement('nav');n.className='crumbs';n.innerHTML='<a href="#/">Home</a><i>/</i><span>'+h.textContent.replace(/</g,'&lt;')+'</span>';w.insertBefore(n,w.firstChild);FS.fixLinks(n)});
  if(document.querySelector('.hx2'))return;
  document.querySelectorAll('.view .sec>.wrap,.view .ph>.wrap').forEach(w=>{w.classList.add('rv');if(FS.quiet)w.classList.add('in')});
  document.querySelectorAll('.view .grid').forEach(g=>{g.classList.add('stg')});if(FS.reveal)FS.reveal()};

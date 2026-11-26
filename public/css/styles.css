@@ -864,3 +864,27 @@ details.faq{transition:.2s}details.faq[open]{border-color:var(--gold);box-shadow
 .rmap .m::before{content:'';position:absolute;left:-48px;top:4px;width:16px;height:16px;border-radius:50%;background:var(--gold-dark);border:3px solid #fff;box-shadow:0 0 0 2px var(--gold)}
 .rmap h3{font-size:1.15rem;margin-bottom:8px}
 .rmap ul.chk{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px 28px;margin:0}
+
+/* ===== program detail page ===== */
+.subnav{gap:0;padding:0;background:#fff;border:1px solid var(--line);border-bottom:2px solid var(--gold);margin-bottom:22px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 94%,transparent);mask-image:linear-gradient(90deg,#000 94%,transparent)}
+.subnav::-webkit-scrollbar{display:none}
+.subnav a{border:0;border-right:1px solid #eeeadb;padding:14px 18px;font-size:.78rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);background:none;flex:none;transition:.2s;position:relative}
+.subnav a:hover{color:var(--ink);background:var(--paper)}
+.subnav a.on{color:var(--ink);background:#faf5e4}.subnav a.on::after{content:'';position:absolute;left:0;right:0;bottom:-2px;height:3px;background:var(--gold-dark)}
+.pl{gap:32px}
+.pl>div:first-child{display:grid;gap:22px;min-width:0}
+.blk{margin:0;background:#fff;border:1px solid #e6e1d0;padding:28px 30px;scroll-margin-top:150px;box-shadow:0 1px 2px rgba(17,17,15,.04)}
+.blk>h2{font-size:1.45rem;margin-bottom:18px;padding-left:14px;position:relative}
+.blk>h2::before{content:'';position:absolute;left:0;top:.2em;bottom:.2em;width:4px;background:var(--gold)}
+.blk>p{line-height:1.7}
+.blk ul.chk{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0 30px}
+.blk .card.flat ul.chk{grid-template-columns:1fr 1fr}
+.blk #s-roadmap ul,.rmap ul.chk{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.blk details.acc{margin-bottom:10px}.blk details.acc[open]{border-color:var(--gold)}.blk details.acc summary{padding:15px 18px}
+.blk details.acc div ul.chk{grid-template-columns:1fr}
+.blk .grid.g2>.card:last-child:nth-child(odd){grid-column:1/-1}
+.blk .grid.g2>.card{border-left:3px solid var(--gold)}
+.blk .pill-row{display:flex;flex-wrap:wrap;gap:10px}
+.side>.card{border-top:4px solid var(--gold);padding:26px}
+.side .btn-block{margin-top:4px}
+@media(max-width:700px){.blk{padding:22px 18px}.subnav a{padding:12px 14px}.blk .card.flat ul.chk{grid-template-columns:1fr}.blk ul.chk{grid-template-columns:1fr}}

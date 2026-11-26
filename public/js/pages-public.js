@@ -217,8 +217,14 @@ FS.route('/programs/([\\w-]+)',([id])=>{
  <div class="blk" id="s-faq"><h2>Frequently Asked Questions</h2>${faqHtml(p.faqs||[])}</div>
  </div>
  <aside class="side"><div class="card" id="s-apply"><span class="eyebrow">One-time fee</span><div style="font:700 2.4rem 'Playfair Display',serif;color:var(--navy)">${FS.feeText}</div><p style="margin:6px 0 14px">Pay once and unlock <b>all ${FS.programs().length} programs</b>, including ${E(p.name)}.</p><ul class="chk" style="font-size:.9rem;margin-bottom:16px"><li>All ${FS.programs().length} tracks within ${p.months} months</li><li>Assignments &amp; live project</li><li>Certificate on completion</li><li>Placement assistance</li></ul><button class="btn btn-p btn-block" onclick="A.enroll('${p.id}')">Apply for All ${FS.programs().length} Tracks</button></div></aside></div></div></section>`,'#/programs');
+ FS.spy();
 });
 
+/* highlight the matching tab in the program page's section bar while scrolling */
+FS.spy=()=>{if(window.__spy){window.removeEventListener('scroll',window.__spy)}
+ const nav=document.querySelector('.subnav');if(!nav)return;const links=[...nav.querySelectorAll('a')],ids=links.map(a=>(a.getAttribute('onclick').match(/'(s-[\w]+)'/)||[])[1]);
+ window.__spy=()=>{let cur=0;ids.forEach((id,i)=>{const e=document.getElementById(id);if(e&&e.getBoundingClientRect().top<160)cur=i});links.forEach((a,i)=>a.classList.toggle('on',i===cur));const a=links[cur];if(a&&nav.scrollWidth>nav.clientWidth){const l=a.offsetLeft-nav.clientWidth/2+a.offsetWidth/2;nav.scrollTo({left:l,behavior:'auto'})}};
+ window.addEventListener('scroll',window.__spy,{passive:true});window.__spy()};
 /* Static pages */
 const page=(title,sub,body,active,wide)=>FS.mountPublic(`<section class="ph"><div class="wrap"><h1>${title}</h1><p>${sub}</p></div></section><section class="sec"><div class="wrap" style="${wide?'':'max-width:960px'}">${body}</div></section>`,active);
 const ctaBand=(h,t,extra)=>`<section class="sec" style="padding-top:0"><div class="wrap"><div class="cta-band"><i class="o1"></i><i class="o2"></i><h2>${h}</h2><p>${t}</p><div class="row" style="justify-content:center;gap:12px;flex-wrap:wrap"><a href="#" onclick="A.enroll();return false" class="btn btn-a">Apply now <span class="ar">→</span></a>${extra||'<a href="#/contact" class="btn btn-w">Contact admissions</a>'}</div></div></div></section>`;
