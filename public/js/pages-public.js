@@ -167,18 +167,21 @@ A.pf=(k,v)=>{FS.ui.pf[k]=v;FS.ui.focusq=k==='q';FS.render(true);FS.ui.focusq=fal
 A.pfReset=()=>{FS.ui.pf={q:'',cat:'',dur:'',mode:''};FS.render(true)};
 
 /* Program details */
-FS.applyForm=pid=>`<form onsubmit="return A.apply(event)" id="appf">
- <div class="frow"><div class="fg"><label>Full name *</label><input name="name" required></div><div class="fg"><label>Email address *</label><input name="email" type="email" required></div></div>
- <div class="frow"><div class="fg"><label>Mobile number *</label><input name="phone" required pattern="[0-9+\\- ]{10,15}" title="Enter a valid mobile number"></div><div class="fg"><label>City *</label><input name="city" required></div></div>
+FS.applyForm=pid=>`<form onsubmit="return A.apply(event)" id="appf" class="appf">
+ <fieldset><legend><i>1</i>Personal details</legend>
+ <div class="frow"><div class="fg"><label>Full name *</label><input name="name" required autocomplete="name"></div><div class="fg"><label>Email address *</label><input name="email" type="email" required autocomplete="email"></div></div>
+ <div class="frow"><div class="fg"><label>Mobile number *</label><input name="phone" type="tel" required pattern="[0-9+\\- ]{10,15}" title="Enter a valid mobile number" autocomplete="tel"></div><div class="fg"><label>City *</label><input name="city" required autocomplete="address-level2"></div></div></fieldset>
+ <fieldset><legend><i>2</i>Education</legend>
  <div class="frow"><div class="fg"><label>College / university *</label><input name="college" required></div><div class="fg"><label>Qualification *</label><select name="qualification" required><option value="">Select</option><option>12th Pass</option><option>Diploma</option><option>B.Tech / B.E.</option><option>BCA / MCA</option><option>B.Com / M.Com</option><option>BBA / MBA</option><option>BA / MA</option><option>B.Sc / M.Sc</option><option>Other</option></select></div></div>
  <div class="frow"><div class="fg"><label>Graduation year *</label><select name="year" required><option value="">Select</option>${[2023,2024,2025,2026,2027,2028].map(y=>`<option>${y}</option>`).join('')}</select></div>
- <div class="fg"><label>Focus track *</label><select name="program" required>${FS.programs().map(p=>`<option value="${p.id}" ${p.id===pid?'selected':''}>${E(p.name)}</option>`).join('')}</select><span class="hint">All five tracks are included in your fee.</span></div></div>
- <div class="fg"><label>Create password *</label><input name="pass" type="password" minlength="8" required autocomplete="new-password"><span class="hint">At least 8 characters. Used to log in after your application is approved.</span></div>
- <div class="fg"><label>Resume upload</label><input name="resume" type="file" accept=".pdf,.doc,.docx"><span class="hint">PDF or Word, up to 5 MB.</span></div>
- <div class="fg"><label>Additional information</label><textarea name="info" placeholder="Anything you'd like us to know"></textarea></div>
- <label style="font-weight:500;display:flex;gap:8px;align-items:flex-start"><input type="checkbox" required style="width:auto;margin-top:4px"><span>I agree to the <a href="#/terms" target="_blank">Terms</a> and <a href="#/privacy" target="_blank">Privacy Policy</a>.</span></label>
- <button class="btn btn-p btn-block" style="margin-top:16px">Submit Application</button></form>`;
-A.apply=async e=>{e.preventDefault();const form=e.target,btn=form.querySelector('button.btn-block');const fd=new FormData(form);const f=Object.fromEntries(fd.entries());
+ <div class="fg"><label>Focus track *</label><select name="program" required>${FS.programs().map(p=>`<option value="${p.id}" ${p.id===pid?'selected':''}>${E(p.name)}</option>`).join('')}</select><span class="hint">All five tracks are included in your fee.</span></div></div></fieldset>
+ <fieldset><legend><i>3</i>Account &amp; documents</legend>
+ <div class="fg"><label>Create password *</label><input name="pass" type="password" minlength="8" required autocomplete="new-password"><span class="hint">At least 8 characters. You will use it to log in after approval.</span></div>
+ <div class="fg"><label>Resume</label><label class="drop-file"><input name="resume" type="file" accept=".pdf,.doc,.docx" onchange="this.parentNode.querySelector('em').textContent=this.files[0]?this.files[0].name:'Choose a PDF or Word file'"><span class="df-i">📎</span><span class="df-t"><b>Upload your resume</b><em>Choose a PDF or Word file</em></span><span class="df-b">Browse</span></label><span class="hint">Optional · PDF or Word · up to 5 MB</span></div>
+ <div class="fg"><label>Anything else we should know?</label><textarea name="info" rows="3" placeholder="For example: your goals, or a business idea you want to build"></textarea></div></fieldset>
+ <label class="agree"><input type="checkbox" required><span>I agree to the <a href="#/terms" target="_blank">Terms</a> and <a href="#/privacy" target="_blank">Privacy Policy</a>.</span></label>
+ <button class="btn btn-a btn-block ax-btn">Submit application <span class="ar">→</span></button></form>`;
+A.apply=async e=>{e.preventDefault();const form=e.target,btn=form.querySelector('.ax-btn');const fd=new FormData(form);const f=Object.fromEntries(fd.entries());
  f.email=f.email.trim().toLowerCase();f.password=f.pass;delete f.pass;const file=fd.get('resume');delete f.resume;btn.disabled=true;
  try{
   if(file&&file.size){if(file.size>5*1024*1024)throw new Error('Resume must be under 5 MB.');f.resumeId=(await FS.upload(file,'resume')).id}
