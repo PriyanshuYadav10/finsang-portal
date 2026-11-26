@@ -26,7 +26,8 @@ FS.route('/admin/(\\w+)',([pg],q)=>{
 FS.greet=()=>{const h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening'};
 FS.todayStr=()=>new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
 FS.ago=d=>{if(!d)return'';const n=Math.round((new Date(FS.day(0)+'T00:00:00')-new Date(d+'T00:00:00'))/864e5);return n<=0?'Today':n===1?'Yesterday':n<30?n+'d ago':FS.fmt(d)};
-FS.hero=(title,sub,actions,side)=>`<div class="dhero"><div class="mesh2"><i></i><i></i></div><div class="dh-l"><span class="pill dk">${FS.todayStr()}</span><h2>${title}</h2><p>${sub}</p><div class="dh-a">${actions}</div></div>${side?`<div class="dh-r">${side}</div>`:''}</div>`;
+FS.hero=(title,sub,actions,side)=>`<div class="dhero"><div class="mesh2"><i></i><i></i></div><div class="dh-l"><span class="dh-date">${FS.todayStr()}</span><h2>${title}</h2><p>${sub}</p><div class="dh-a">${actions}</div></div>${side?`<div class="dh-r">${side}</div>`:''}</div>`;
+FS.heroStats=rows=>`<div class="dh-sg">${rows.map(r=>`<a class="dh-sc" ${r[3]?`href="${r[3]}"`:''}><b>${r[0]}</b><span>${r[1]}</span>${r[2]?`<small>${r[2]}</small>`:''}</a>`).join('')}</div>`;
 FS.kpi=(icon,val,label,sub,href)=>`<${href?`a href="${href}"`:'div'} class="card kpi"><div class="kp-i">${icon}</div><div><b>${val}</b><span>${label}</span>${sub?`<small>${sub}</small>`:''}</div></${href?'a':'div'}>`;
 FS.hbars=rows=>`<div class="hbars">${rows.map(r=>`<div class="hb"><div class="hb-t"><span>${E(r[0])}</span><b>${r[1]}</b></div><div class="hb-b"><i style="width:${r[2]}%"></i></div></div>`).join('')}</div>`;
 FS.donut=(pct,label)=>`<div class="donut" style="--p:${pct}"><div><b>${pct}%</b><span>${label}</span></div></div>`;
@@ -110,7 +111,7 @@ function aOver(){const S=FS.state,u=FS.user(),pend=S.applications.filter(a=>['Pe
  const todo=[[toReview,'📝','submissions to evaluate','#/admin/assessments'],[pend.length,'📥','applications to review','#/admin/students'],[unread,'✉️','unread messages','#/admin/inbox'],[S.certReq.length,'🏅','certificate requests','#/admin/certificates']].filter(t=>t[0]);
  return FS.hero(FS.greet()+', '+E(u.name.split(' ')[0])+' 👋','Here is what is happening across your programs today.',
    `<a class="btn btn-a" href="#/admin/students">Review applications${pend.length?` (${pend.length})`:''}</a><a class="btn btn-w" href="#/admin/announcements">Post announcement</a>`,
-   `<div class="dh-stat"><b data-n="${st.length}">${st.length}</b><span>students enrolled</span></div>`)+`
+   FS.heroStats([[st.length,'Students enrolled','+'+newSt+' this week','#/admin/students'],[pend.length,'Applications to review',newAp?'+'+newAp+' this week':'Up to date','#/admin/students'],[S.certs.length,'Certificates issued',S.certReq.length?S.certReq.length+' requested':'None pending','#/admin/certificates']]))+`
  <div class="grid g4 kpis">${FS.kpi('👥',st.length,'Registered students',`+${newSt} this week`,'#/admin/students')}${FS.kpi('📥',pend.length,'Pending applications',`+${newAp} this week`,'#/admin/students')}${FS.kpi('🏅',S.certs.length,'Certificates issued',S.certReq.length+' requested','#/admin/certificates')}${FS.kpi('💰','₹'+(paid*fee).toLocaleString('en-IN'),'Fees collected',paid+' of '+st.length+' paid','#/admin/students')}</div>
  <div class="grid g3 dgrid">
   <div class="card"><div class="ch-h"><h3>Enrollment by program</h3></div>${FS.hbars(byProg.map(x=>[x[0],x[1],Math.round(x[1]/mx*100)]))}</div>
