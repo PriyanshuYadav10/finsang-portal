@@ -28,6 +28,10 @@ function seedBase() {
     id: 'site', fee: SITE.fee, email: SITE.email, phone: SITE.phone, address: SITE.address, applicationsOpen: true
   });
   if (!store.get('settings', 'criteria')) store.put('settings', 'criteria', { id: 'criteria', progress: 80, score: 60, attendance: 75 });
+  if (!store.get('settings', 'migrations')) { // one-time: every program is Hybrid, no mentor name shown
+    store.all('programs').forEach((p) => store.put('programs', p.id, { ...p, mode: 'Hybrid', mentor: '' }));
+    store.put('settings', 'migrations', { id: 'migrations', v: 1 });
+  }
   if (users.countRole('admin') === 0) {
     const email = (process.env.ADMIN_EMAIL || 'admin@finsang.local').toLowerCase();
     const pw = process.env.ADMIN_PASSWORD || 'ChangeMe123!';

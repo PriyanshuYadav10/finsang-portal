@@ -157,7 +157,7 @@ FS.route('/programs',()=>{
  <input id="pq" placeholder="🔍 Search programs or skills…" value="${E(f.q)}" oninput="A.pf('q',this.value)">
  <select onchange="A.pf('cat',this.value)"><option value="">All categories</option>${opt([...new Set(all.map(p=>p.cat))],f.cat)}</select>
  <select onchange="A.pf('dur',this.value)"><option value="">Any duration</option>${[...new Set(all.map(p=>p.months))].sort().map(m=>`<option value="${m}" ${f.dur==m?'selected':''}>${m} months</option>`).join('')}</select>
- <select onchange="A.pf('mode',this.value)"><option value="">All modes</option>${opt([...new Set(all.map(p=>p.mode))],f.mode)}</select>
+ 
  <button class="btn btn-o" onclick="A.pfReset()">Reset</button></div>
  <p class="hint" style="margin-bottom:16px">${list.length} program${list.length!==1?'s':''} found</p>
  <div class="grid g3 pgrid">${list.map(FS.programCard).join('')||'<div class="empty card" style="grid-column:1/-1">No programs match your filters.</div>'}</div></div></section>${FS.focusGuide()}`,'#/programs');
@@ -200,7 +200,7 @@ FS.route('/programs/([\\w-]+)',([id])=>{
  <div class="pd-g"><div class="pd-l"><div class="pd-t"><div class="pd-i" style="background:${p.color}">${p.icon}</div><div><span class="pd-k">Track · ${E(p.cat)}</span><h1>${E(p.name)}</h1></div></div>
   <p class="pd-s">${E(p.short)}</p>
   <div class="pd-b"><a class="btn btn-a" href="#" onclick="A.enroll('${p.id}');return false">Apply for All ${FS.programs().length} Tracks</a><a class="btn btn-w" href="#/programs">All Programs</a></div></div>
-  <div class="pd-f"><div><span>Duration</span><b>${p.months} months</b></div><div><span>Mode</span><b>${E(p.mode)}</b></div><div><span>Mentor</span><b>${E(FS.mentorOf(p.id))}</b></div><div><span>Fee</span><b>Included in ${FS.feeText}</b></div></div></div></div></section>
+  <div class="pd-f"><div><span>Duration</span><b>${p.months} months</b></div><div><span>Mode</span><b>${E(p.mode)}</b></div><div><span>Fee</span><b>Included in ${FS.feeText}</b></div></div></div></div></section>
  <section class="sec" style="padding-top:20px"><div class="wrap"><div class="subnav">${sec.map(s=>`<a href="#" onclick="return A.go('s-${s[0]}')">${s[1]}</a>`).join('')}</div>
  <div class="pl"><div>
  <div class="blk" id="s-overview"><h2>Overview</h2><p style="color:var(--ink)">${E(p.overview||p.short)}</p><div class="card flat" style="margin-top:16px;background:#faf8f1"><b>What you'll cover</b><ul class="chk" style="margin-top:8px;columns:2;column-gap:24px">${p.topics.map(t=>`<li>${E(t)}</li>`).join('')}</ul></div></div>

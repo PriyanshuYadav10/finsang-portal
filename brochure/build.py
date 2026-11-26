@@ -31,7 +31,7 @@ TRACKS = [
            ('Capstone & Career Preparation', 'Capstone build, demo prep, developer resume and portfolio', 'Capstone Project Proposal', 'Capstone Rubric, Developer Resume Template')],
   live='Teams of 3–4 build a small web product (for example an appointment booking tool or inventory tracker) against a brief shaped with the technology partner. Work is tracked in GitHub, reviewed in sprint demos and presented at the final showcase.',
   skills='HTML/CSS/JS, React basics, Node.js & APIs, SQL, Git & GitHub', careers='Junior Web Developer, Frontend Developer, Backend Trainee, QA / Test Associate'),
- dict(n='02', name='Digital Marketing', mode='Online', cat='Marketing',
+ dict(n='02', name='Digital Marketing', mode='Hybrid', cat='Marketing',
   intro='Learn SEO, social media, paid ads and analytics by running practical campaign assignments.',
   sprints=[('Digital Marketing Fundamentals', 'The marketing funnel, channels, tools and metrics', 'Weekly practice quiz', 'Digital Marketing Primer'),
            ('SEO & Search Console', 'Keyword research, on-page SEO, Search Console basics', 'Keyword Research Sheet', 'SEO Checklist, Keyword Research Template'),
@@ -40,7 +40,7 @@ TRACKS = [
            ('Analytics, Leads & Reporting', 'GA4, lead generation, reporting, portfolio and resume', 'Campaign Performance Report', 'Reporting Dashboard Template, Marketer Resume Template')],
   live='Learners plan and run a simulated campaign for a sample brief from the growth partner: strategy, content, ads setup, analytics and a final performance presentation.',
   skills='SEO, Google Ads, Meta Ads, Content marketing, Analytics', careers='Digital Marketing Executive, SEO Associate, Social Media Executive, Performance Marketing Trainee'),
- dict(n='03', name='UI/UX Designing', mode='Online', cat='Design',
+ dict(n='03', name='UI/UX Designing', mode='Hybrid', cat='Design',
   intro='Learn user research, wireframing, Figma and prototyping, and finish with a job-ready design portfolio.',
   sprints=[('Design Fundamentals', 'Design principles, colour, typography, the UX process', 'Visual Hierarchy Poster', 'Design Principles Guide'),
            ('User Research & Strategy', 'Interviews, personas, research methods', 'User Interview Report', 'Interview Script Template, Research Methods Deck'),
@@ -49,7 +49,7 @@ TRACKS = [
            ('Portfolio & Career Prep', 'Case studies, portfolio review, mock design interviews', 'Portfolio case study', 'Case Study Template, Designer Resume Template')],
   live='Teams work through a design sprint on a brief from the technology partner: research, flows, UI, prototype and a usability test readout presented to mentors.',
   skills='Figma, User research, Wireframing, Prototyping, Design systems', careers='UI Designer, UX Designer Trainee, Product Design Intern, Visual Designer'),
- dict(n='04', name='Sales & Business Development', mode='Classroom', cat='Business',
+ dict(n='04', name='Sales & Business Development', mode='Hybrid', cat='Business',
   intro='Build communication, CRM and client acquisition skills through practical outreach and pipeline exercises.',
   sprints=[('Sales Fundamentals', 'Sales basics, buyer psychology, product knowledge', 'Elevator Pitch Recording', 'Sales Fundamentals Guide'),
            ('Communication & Negotiation', 'Communication skills, objection handling, negotiation', 'Weekly role-play assessment', 'Objection Handling Playbook, Negotiation Slides'),
@@ -145,7 +145,7 @@ page(head('Program overview',3)+f'''<div class="eye">Overview</div><h2>One progr
 <tr><td><b>Program</b></td><td>Finsang 360° Career Program</td></tr><tr><td><b>Duration</b></td><td>30 days of guided learning</td></tr>
 <tr><td><b>Tracks</b></td><td>Software Development · Digital Marketing · UI/UX Designing · Sales &amp; Business Development · E-commerce Management</td></tr>
 <tr><td><b>Fee</b></td><td>{FEE}, one time. One payment unlocks all five tracks. Payable after your application is approved.</td></tr>
-<tr><td><b>Modes</b></td><td>Online, Hybrid and Classroom, depending on the track (see pages 7–11)</td></tr>
+<tr><td><b>Modes</b></td><td>Hybrid, for every track</td></tr>
 <tr><td><b>Who can apply</b></td><td>Students, freshers, graduates and aspiring professionals. Each track lists its own eligibility criteria.</td></tr>
 <tr><td><b>You finish with</b></td><td>A portfolio of projects, a verifiable certificate, career guidance and, if you want it, a plan to start your own business</td></tr></table>
 <h3 class="mt2">What is included in your fee</h3>
