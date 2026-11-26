@@ -6,7 +6,7 @@ FS.programCard=p=>`<div class="card pc"><div class="top"><div class="pi" style="
 <div class="lbl">Key skills</div><div class="meta">${(p.skills||[]).slice(0,5).map(s=>`<span class="tag m">${E(s)}</span>`).join('')}</div>
 <div class="lbl">Career opportunities</div><p style="font-size:.85rem">${(p.careers||[]).slice(0,3).map(E).join(' · ')}</p>
 <div class="lbl">Fee</div><p style="font-size:.85rem"><b>✓ Included in the one-time ${FS.feeText} fee</b> · one of all ${FS.programs().length} tracks</p>
-<div class="act"><a class="btn btn-o" href="#/programs/${p.id}">View Details</a><a class="btn btn-p" href="#" onclick="A.enroll('${p.id}');return false">Apply · All Tracks</a></div></div>`;
+<div class="act"><a class="btn btn-o" href="#/programs/${p.id}">View Details</a><a class="btn btn-p" href="#" onclick="A.enroll('${p.id}');return false">Apply Now</a></div></div>`;
 
 /* ---------- editable website content: built-in defaults + admin overrides (Admin -> Website Content) ---------- */
 FS.ORGS0=FS.ORGS0||JSON.parse(JSON.stringify(FS.ORGS));
@@ -124,7 +124,7 @@ FS.route('/',()=>{
 
  <section class="sec" id="programs"><div class="wrap rv"><div class="sec-head"><span class="pill">Featured programs</span><h2>${FS.hl(C.home.progTitle)}</h2><p>${E(FS.fx(C.home.progSub))}</p></div>
   <div class="ptabs"><button class="on" data-c="" onclick="A.homeCat('')">All programs</button>${cats.map(c=>`<button data-c="${E(c)}" onclick="A.homeCat(this.dataset.c)">${E(c)}</button>`).join('')}</div>
-  <div class="grid g3 stg" id="pgrid">${progs.map(FS.programCard).join('')}</div><div style="text-align:center;margin-top:34px"><a href="#/programs" class="btn btn-o">View all programs <span class="ar">→</span></a></div></div></section>
+  <div class="grid g3 stg pgrid" id="pgrid">${progs.map(FS.programCard).join('')}</div><div style="text-align:center;margin-top:34px"><a href="#/programs" class="btn btn-o">View all programs <span class="ar">→</span></a></div></div></section>
 
  <section class="sec qzs"><div class="grid-bg"></div><div class="wrap rv qz-in"><div class="qz-l"><span class="pill dk">Program finder</span><h2>Unsure which program fits you?</h2><p>Take our 2-question quiz and we will point you to a track.</p><div id="quiz" class="quiz"></div></div>
   <div class="qz-r" aria-hidden="true"><div class="arch sm"><span>🎯</span></div><div class="orbit r1"></div></div></div></section>
@@ -160,7 +160,7 @@ FS.route('/programs',()=>{
  <select onchange="A.pf('mode',this.value)"><option value="">All modes</option>${opt([...new Set(all.map(p=>p.mode))],f.mode)}</select>
  <button class="btn btn-o" onclick="A.pfReset()">Reset</button></div>
  <p class="hint" style="margin-bottom:16px">${list.length} program${list.length!==1?'s':''} found</p>
- <div class="grid g3">${list.map(FS.programCard).join('')||'<div class="empty card" style="grid-column:1/-1">No programs match your filters.</div>'}</div></div></section>${FS.focusGuide()}`,'#/programs');
+ <div class="grid g3 pgrid">${list.map(FS.programCard).join('')||'<div class="empty card" style="grid-column:1/-1">No programs match your filters.</div>'}</div></div></section>${FS.focusGuide()}`,'#/programs');
  const i=document.getElementById('pq');if(i&&FS.ui.focusq){i.focus();i.setSelectionRange(i.value.length,i.value.length)}
 });
 A.pf=(k,v)=>{FS.ui.pf[k]=v;FS.ui.focusq=k==='q';FS.render(true);FS.ui.focusq=false};
@@ -172,7 +172,7 @@ FS.applyForm=pid=>`<form onsubmit="return A.apply(event)" id="appf">
  <div class="frow"><div class="fg"><label>Mobile number *</label><input name="phone" required pattern="[0-9+\\- ]{10,15}" title="Enter a valid mobile number"></div><div class="fg"><label>City *</label><input name="city" required></div></div>
  <div class="frow"><div class="fg"><label>College / university *</label><input name="college" required></div><div class="fg"><label>Qualification *</label><select name="qualification" required><option value="">Select</option><option>12th Pass</option><option>Diploma</option><option>B.Tech / B.E.</option><option>BCA / MCA</option><option>B.Com / M.Com</option><option>BBA / MBA</option><option>BA / MA</option><option>B.Sc / M.Sc</option><option>Other</option></select></div></div>
  <div class="frow"><div class="fg"><label>Graduation year *</label><select name="year" required><option value="">Select</option>${[2023,2024,2025,2026,2027,2028].map(y=>`<option>${y}</option>`).join('')}</select></div>
- <div class="fg"><label>Choose your focus track * <span class="hint">(all five tracks are included)</span></label><select name="program" required>${FS.programs().map(p=>`<option value="${p.id}" ${p.id===pid?'selected':''}>${E(p.name)}</option>`).join('')}</select></div></div>
+ <div class="fg"><label>Focus track *</label><select name="program" required>${FS.programs().map(p=>`<option value="${p.id}" ${p.id===pid?'selected':''}>${E(p.name)}</option>`).join('')}</select><span class="hint">All five tracks are included in your fee.</span></div></div>
  <div class="fg"><label>Create password *</label><input name="pass" type="password" minlength="8" required autocomplete="new-password"><span class="hint">At least 8 characters. Used to log in after your application is approved.</span></div>
  <div class="fg"><label>Resume upload</label><input name="resume" type="file" accept=".pdf,.doc,.docx"><span class="hint">PDF or Word, up to 5 MB.</span></div>
  <div class="fg"><label>Additional information</label><textarea name="info" placeholder="Anything you'd like us to know"></textarea></div>
