@@ -857,3 +857,10 @@ details.faq{transition:.2s}details.faq[open]{border-color:var(--gold);box-shadow
 .fq-side .srch,.lg-toc .srch{min-width:0;width:100%}
 .fq-side>*,.lg-toc>*{min-width:0}
 .pt ul.chk li{text-align:left}.pt td{text-align:left!important}
+
+/* program roadmap: vertical timeline (separate from the home-page .tl) */
+.rmap{position:relative;margin:8px 0 0 10px;padding-left:34px;border-left:3px solid #e6dcc0;display:grid;gap:26px}
+.rmap .m{position:relative}
+.rmap .m::before{content:'';position:absolute;left:-48px;top:4px;width:16px;height:16px;border-radius:50%;background:var(--gold-dark);border:3px solid #fff;box-shadow:0 0 0 2px var(--gold)}
+.rmap h3{font-size:1.15rem;margin-bottom:8px}
+.rmap ul.chk{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px 28px;margin:0}
