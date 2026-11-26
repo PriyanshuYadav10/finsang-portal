@@ -125,7 +125,7 @@ FS.homeFor=r=>r==='admin'?'#/admin/overview':r==='trainer'?'#/trainer/overview':
 
 /* ---- UI helpers ---- */
 FS.toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),3500)};
-FS.modal=(html,lg)=>{FS.closeModal();const o=document.createElement('div');o.className='ov';o.id='modal';o.innerHTML=`<div class="md ${lg?'lg':''}">${html}</div>`;o.addEventListener('mousedown',e=>{if(e.target===o)FS.closeModal()});document.body.appendChild(o);if(FS.fixLinks)FS.fixLinks(o)};
+FS.modal=(html,lg)=>{FS.closeModal();const o=document.createElement('div');o.className='ov';o.id='modal';o.innerHTML=`<div class="md ${lg?'lg':''}"><button type="button" class="mclose" onclick="FS.closeModal()" aria-label="Close">×</button>${html}</div>`;o.addEventListener('mousedown',e=>{if(e.target===o)FS.closeModal()});document.body.appendChild(o);if(FS.fixLinks)FS.fixLinks(o)};
 FS.closeModal=()=>{const m=document.getElementById('modal');if(m)m.remove()};
 FS.download=(name,text,type)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:type||'text/plain'}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)};
 FS.pct=(a,b)=>b?Math.round(a/b*100):0;

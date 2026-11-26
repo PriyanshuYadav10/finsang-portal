@@ -15,7 +15,7 @@ FS.mountPublic=(html,active)=>{
   const u=FS.user();
   $app().innerHTML=`<div id="sprog"></div><header class="nav"><div class="wrap">${FS.logo()}<button class="burger" onclick="A.menu()" aria-label="Menu">☰</button>
   <nav class="nav-links" id="navl">${PUB.map(l=>l[0]==='#/programs'?`<div class="dd"><a href="#/programs" class="${active==='#/programs'?'on':''}">Programs <small>▾</small></a><div class="ddm">${FS.programs().map(p=>`<a href="#/programs/${p.id}"><i style="background:${p.color}">${p.icon}</i><span><b>${E(p.name)}</b><small>${p.months} months · ${E(p.mode)}</small></span></a>`).join('')}<a href="#/programs" class="all">View all programs →</a></div></div>`:`<a href="${l[0]}" class="${active===l[0]?'on':''}">${l[1]}</a>`).join('')}
-  <a href="${u?FS.homeFor(u.role):'#/login'}">${u?'My Dashboard':'Login / Register'}</a>${u?'':`<a href="#/track" class="${active==='#/track'?'on':''}">Track Application</a>`}
+  <a href="${u?FS.homeFor(u.role):'#/login'}">${u?'My Dashboard':'Login / Register'}</a>${u?'':`<a href="#/track" class="hide-md ${active==='#/track'?'on':''}">Track Application</a>`}
   <a href="#" onclick="A.enroll();return false" class="btn btn-p btn-sm" style="margin-left:6px">Enroll ${FS.feeText}</a></nav></div></header>
   <main class="view">${html}</main>${footer()}`;
   if(FS.chrome)FS.chrome();
@@ -23,8 +23,8 @@ FS.mountPublic=(html,active)=>{
 };
 function footer(){const S=FS.state.site||{};return `<footer><div class="wrap"><div class="cols">
  <div><div class="logo" style="margin-bottom:12px"><img src="img/logo.png" alt="Finsang"></div>
- <p style="color:#bdbbb3;font-size:.88rem">${E(FS.ORGS.finsang.name)}. ${E(FS.C().footer.about)}</p>
- <div class="ct">${S.email?`<div>✉ <a href="mailto:${E(S.email)}"><b>${E(S.email)}</b></a></div>`:''}${S.phone?`<div>📞 <a href="tel:${E(String(S.phone).replace(/[^\d+]/g,''))}"><b>${E(S.phone)}</b></a></div>`:''}${S.address?`<div>📍 <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(S.address)}" target="_blank" rel="noopener">${E(S.address)}</a> <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(S.address)}" target="_blank" rel="noopener" class="mapl">View on map ↗</a></div>`:''}</div>
+ <p style="color:#bdbbb3;font-size:.88rem">${E(String(FS.ORGS.finsang.name).replace(/\.+$/,''))}. ${E(FS.C().footer.about)}</p>
+ <div class="ct">${S.email?`<div><span class="ic">✉</span><span><a href="mailto:${E(S.email)}"><b>${E(S.email)}</b></a></span></div>`:''}${S.phone?`<div><span class="ic">📞</span><span><a href="tel:${E(String(S.phone).replace(/[^\d+]/g,''))}"><b>${E(S.phone)}</b></a></span></div>`:''}${S.address?`<div><span class="ic">📍</span><span><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(S.address)}" target="_blank" rel="noopener">${E(S.address)}</a> <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(S.address)}" target="_blank" rel="noopener" class="mapl">View on map ↗</a></span></div>`:''}</div>
  <a href="#" onclick="A.enroll();return false" class="apply">Apply now →</a></div>
  <div><h4>Career Tracks</h4>${FS.programs().map(p=>`<a href="#/programs/${p.id}">${E(p.name)}</a>`).join('')}</div>
  <div><h4>Quick Links</h4><a href="#/about">About Us</a><a href="#/partners">Our Partners</a><a href="#/founder">Founder Sprint</a><a href="#/track">Track Application</a><a href="#/verify">Verify Certificate</a><a href="#/login">Student / Staff Login</a><a href="#/contact">Contact Us</a><a href="#/faq">FAQs</a><a href="#/privacy">Privacy Policy</a><a href="#/terms">Terms &amp; Conditions</a></div>

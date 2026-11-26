@@ -696,3 +696,24 @@ footer .ct a{color:inherit;text-decoration:none}footer .ct a:hover{color:var(--g
 .pd-f span{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#a6a49d}
 .pd-f b{color:#fff;font-size:.95rem;text-align:right}
 @media(max-width:900px){.pd-g{grid-template-columns:1fr;gap:26px}.pd-t{gap:14px}.pd-i{width:60px;height:60px;font-size:1.8rem}}
+
+/* ===== alignment fixes ===== */
+footer .ct{display:grid;gap:10px}
+footer .ct>div{display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+footer .ct>div>i,footer .ct .ic{flex:none}
+footer .ct a{display:inline}
+footer .ct b{display:inline}
+footer .ct .mapl{display:block;margin:2px 0 0}
+.md{position:relative}
+.mclose{position:absolute;top:10px;right:12px;width:34px;height:34px;border:0;background:none;font-size:1.7rem;line-height:1;color:var(--mut);cursor:pointer;padding:0;z-index:2;transition:.15s}
+.mclose:hover{color:var(--ink);background:var(--paper)}
+.md h3:first-child{padding-right:36px}
+
+/* header: keep everything on one line between 961 and 1240px */
+@media(min-width:961px) and (max-width:1240px){.nav-links{gap:0}.nav-links a{padding:10px 8px;font-size:.68rem;letter-spacing:.05em}.nav-links a.btn{margin-left:6px;padding:0 12px;white-space:nowrap}.nav .wrap{gap:12px}}
+@media(min-width:961px) and (max-width:1060px){.nav-links a.hide-md{display:none}}
+.nav-links a.btn{white-space:nowrap;flex:none}
+/* program cards: buttons may wrap instead of clipping */
+.pc .act{flex-wrap:wrap}.pc .act .btn{flex:1 1 130px;white-space:normal;text-align:center;line-height:1.25;padding-left:12px;padding-right:12px}
+@media(max-width:1280px){.kpis.g4{grid-template-columns:repeat(2,1fr)}}
+.kpi>div{min-width:0}.kpi b{overflow-wrap:anywhere}
