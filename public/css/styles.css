@@ -676,3 +676,6 @@ footer .ct a{color:inherit;text-decoration:none}footer .ct a:hover{color:var(--g
 .ph>.wrap{text-align:center}
 .view .sec>.wrap>h2,.view .sec>.wrap>h3,.view .sec>.wrap>.hint,.view .sec h2.center{text-align:center}
 @media(min-width:761px){.sec .tbl th,.sec .tbl td{text-align:center}.sec .tbl td>div{text-align:center}}
+
+/* detail-page header keeps its icon + text layout left-aligned */
+.ph>.wrap.ph-l{text-align:left}

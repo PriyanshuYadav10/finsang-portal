@@ -193,10 +193,10 @@ FS.route('/programs/([\\w-]+)',([id])=>{
  const o=FS.ORGS[p.partner]||FS.ORGS.finsang;const roadmap=p.roadmap||[];
  const titles=['Foundation','Intermediate Learning','Practical Implementation','Career Preparation'];
  const sec=[['overview','Overview'],['outcomes','Outcomes'],['curriculum','Curriculum'],['roadmap','Roadmap'],['assignments','Assignments'],['project','Live Project'],['assessment','Assessment'],['careers','Careers'],['certification','Certification'],['placement','Placement'],['eligibility','Eligibility'],['faq','FAQ']];
- FS.mountPublic(`<section class="ph"><div class="wrap"><div class="crumb"><a href="#/">Home</a> / <a href="#/programs">Programs</a> / ${E(p.name)}</div>
+ FS.mountPublic(`<section class="ph"><div class="wrap ph-l"><div class="crumb"><a href="#/">Home</a> / <a href="#/programs">Programs</a> / ${E(p.name)}</div>
  <div class="row" style="gap:18px;align-items:flex-start"><div class="pi" style="width:72px;height:72px;font-size:2.2rem;background:${p.color};border-radius:18px;display:grid;place-items:center">${p.icon}</div><div style="flex:1;min-width:240px"><h1>${E(p.name)}</h1><p style="margin:10px 0 16px;max-width:680px">${E(p.short)}</p>
  <div class="meta"><span class="tag">⏱ ${p.months} months</span><span class="tag g">${p.mode}</span><span class="tag a">${p.cat}</span><span class="tag m">Mentor: ${E(FS.mentorOf(p.id))}</span></div></div></div>
- <div class="row" style="margin-top:18px"><a class="btn btn-a" href="#" onclick="A.enroll('${p.id}');return false">Enroll Now</a><a class="btn btn-w" href="#/programs">All Programs</a></div></div></section>
+ <div class="row" style="margin-top:18px"><a class="btn btn-a" href="#" onclick="A.enroll('${p.id}');return false">Apply for All ${FS.programs().length} Tracks</a><a class="btn btn-w" href="#/programs">All Programs</a></div></div></section>
  <section class="sec" style="padding-top:20px"><div class="wrap"><div class="subnav">${sec.map(s=>`<a href="#" onclick="return A.go('s-${s[0]}')">${s[1]}</a>`).join('')}</div>
  <div class="pl"><div>
  <div class="blk" id="s-overview"><h2>Overview</h2><p style="color:var(--ink)">${E(p.overview||p.short)}</p><div class="card flat" style="margin-top:16px;background:#faf8f1"><b>What you'll cover</b><ul class="chk" style="margin-top:8px;columns:2;column-gap:24px">${p.topics.map(t=>`<li>${E(t)}</li>`).join('')}</ul></div></div>
