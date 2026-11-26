@@ -888,3 +888,14 @@ details.faq{transition:.2s}details.faq[open]{border-color:var(--gold);box-shadow
 .side>.card{border-top:4px solid var(--gold);padding:26px}
 .side .btn-block{margin-top:4px}
 @media(max-width:700px){.blk{padding:22px 18px}.subnav a{padding:12px 14px}.blk .card.flat ul.chk{grid-template-columns:1fr}.blk ul.chk{grid-template-columns:1fr}}
+
+/* live project block */
+.lp{background:#fcfbf7;border:1px solid var(--line);border-left:4px solid var(--pc,var(--gold));padding:22px 24px}
+.lp-t{color:var(--ink);line-height:1.7;margin:0 0 18px}
+.lp-p{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--line)}
+.lp-p>span{font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.lp-p em{font-style:normal;font-size:.84rem;color:var(--mut)}
+.lp-p .plogo{display:inline-flex;align-items:center;gap:10px;margin:0}
+.lp-p .plogo img,.lp-p .plogo i{width:40px;height:40px;border-radius:10px;flex:none;object-fit:contain;display:grid;place-items:center}
+.lp-p .plogo span{font-weight:700}
+.lp-p .plogo span{font-size:1rem!important;font-weight:800!important;letter-spacing:0!important;text-transform:none!important;color:var(--navy)!important}
