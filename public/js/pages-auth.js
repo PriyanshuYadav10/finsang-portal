@@ -1,7 +1,7 @@
 /* Login, registration, password reset, application tracking, certificate verification */
 /* Full-screen auth layout (no site header/footer): brand panel + form panel */
 FS.mountAuth=(inner,o)=>{o=o||{};const S=FS.state.site||{},fee=FS.feeText||'';
- const bullets=o.bullets||[['🎓','Five career tracks','Videos, quizzes, assignments and live projects'],['🏅','Verifiable certificate','A unique ID that anyone can check'],['💼','Career and startup support','Guidance, mock interviews and partner openings*']];
+ const bullets=o.bullets||[['🎓','5+ career tracks','Videos, quizzes, assignments and live projects'],['🏅','Verifiable certificate','A unique ID that anyone can check'],['💼','Career and startup support','Guidance, mock interviews and partner openings*']];
  $app().innerHTML=`<div class="ax"><aside class="ax-l"><div class="mesh2"><i></i><i></i><i></i></div>
   <div class="ax-top"><a class="ax-brand" href="#/"><img src="img/logo.png" alt="Finsang"><span><b>Finsang</b><small>360° Career Program</small></span></a><a class="ax-back" href="#/">← Back to website</a></div>
   <div class="ax-hero"><span class="pill dk">${E(o.pill||'Finsang 360° Career Program')}</span><h2>${o.title||'Learn. Build. <em>Launch.</em>'}</h2><p>${E(o.lead||'One secure login for your learning portal, mentor panel or admin console.')}</p>
@@ -36,7 +36,7 @@ A.login=async ev=>{ev.preventDefault();const f=ev.target,btn=f.querySelector('.a
 FS.route('/register',(_,q)=>{
  FS.mountAuth(`<div class="ax-h"><span class="ax-ic">📝</span><div><h1>Apply to the program</h1><p>Create your account by applying. After admin approval you can log in to your dashboard.</p></div></div>
  ${FS.state.site.applicationsOpen?FS.applyForm(q.get('p')||''):'<div class="alert w">Applications are currently closed.</div>'}`,
- {wide:1,pill:'Join the program',title:'Start your <em>360° journey.</em>',lead:'One application. One fee. All five career tracks, plus startup support if you want to build something of your own.',
+ {wide:1,pill:'Join the program',title:'Start your <em>360° journey.</em>',lead:'One application. One fee. All 5+ career tracks, plus startup support if you want to build something of your own.',
   bullets:[['📝','Apply in about 3 minutes','Share your details and resume. No payment to apply.'],['✅','Approval by our team','You can track your status any time with your application ID.'],['🔓','Pay once, unlock everything','The fee is payable only after approval.']],
   alt:'Already applied? <a href="#/login">Log in</a> · <a href="#/track">Track status</a>'});
 });

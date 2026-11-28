@@ -128,7 +128,7 @@ def page(inner, cls='', n=None):
 pages.append(f'''<section class="page cover"><div class="brand"><img src="{{{{LOGO}}}}" alt=""><div><b>Finsang</b><span>360° CAREER PROGRAM</span></div></div>
 <h1>Your 30-day guide to a career, <em>or a company.</em></h1>
 <p>The complete guide to the Finsang 360° Career Program: how the 30 days work, what you learn in each track, how you are assessed and certified, and how we support your career or startup.</p>
-<div class="chips"><span class="g">30 days</span><span>5 career tracks</span><span>One fee · {FEE}</span><span>Startup support included</span></div>
+<div class="chips"><span class="g">30 days</span><span>5+ career tracks</span><span>One fee · {FEE}</span><span>Startup support included</span></div>
 <div class="ft"><span>Program Guide · for students &amp; colleges</span><span>{ORG}</span></div></section>''')
 
 # 2 welcome + contents
@@ -139,17 +139,17 @@ page(head('Welcome',2)+f'''<div class="eye">Welcome</div><h2>Welcome to the <em>
 <h3 class="mt2">Contents</h3><div class="toc">{''.join(f'<a><div>{t}</div><span>{p}</span></a>' for t,p in toc)}</div>''',n=2)
 
 # 3 overview
-page(head('Program overview',3)+f'''<div class="eye">Overview</div><h2>One program. <em>Five careers.</em> One fee.</h2>
+page(head('Program overview',3)+f'''<div class="eye">Overview</div><h2>One program. <em>5+ careers.</em> One fee.</h2>
 <p class="lead">The Finsang 360° Career Program is an industry-oriented, 30-day program from {ORG}, delivered with technology partner GrainZap IT Solutions and growth partner Growth Digital.</p>
 <table><tr><th style="width:38mm">Item</th><th>Details</th></tr>
 <tr><td><b>Program</b></td><td>Finsang 360° Career Program</td></tr><tr><td><b>Duration</b></td><td>30 days of guided learning</td></tr>
 <tr><td><b>Tracks</b></td><td>Software Development · Digital Marketing · UI/UX Designing · Sales &amp; Business Development · E-commerce Management</td></tr>
-<tr><td><b>Fee</b></td><td>{FEE}, one time. One payment unlocks all five tracks. Payable after your application is approved.</td></tr>
+<tr><td><b>Fee</b></td><td>{FEE}, one time. One payment unlocks all 5+ tracks. Payable after your application is approved.</td></tr>
 <tr><td><b>Modes</b></td><td>Hybrid, for every track</td></tr>
 <tr><td><b>Who can apply</b></td><td>Students, freshers, graduates and aspiring professionals. Each track lists its own eligibility criteria.</td></tr>
 <tr><td><b>You finish with</b></td><td>A portfolio of projects, a verifiable certificate, career guidance and, if you want it, a plan to start your own business</td></tr></table>
 <h3 class="mt2">What is included in your fee</h3>
-<div class="grid2"><ul class="ck"><li>Access to all five career tracks</li><li>Video lessons, notes and templates</li><li>Quizzes, topic tests and a full mock test</li><li>Assignments reviewed by mentors</li><li>A live project in your track</li></ul>
+<div class="grid2"><ul class="ck"><li>Access to all 5+ career tracks</li><li>Video lessons, notes and templates</li><li>Quizzes, topic tests and a full mock test</li><li>Assignments reviewed by mentors</li><li>A live project in your track</li></ul>
 <ul class="ck"><li>A verifiable certificate on completion</li><li>Career guidance: resume, portfolio, mock interviews</li><li>Placement assistance* with partner openings</li><li>End-to-end startup support (Founder Sprint)</li><li>A personal dashboard to track everything</li></ul></div>
 <p class="note mt2">*Placement assistance means resume support, mock interviews and access to partner openings. It is not a guarantee of employment.</p>''',n=3)
 
@@ -170,14 +170,14 @@ page(head('Getting started',5)+f'''<div class="eye">Admission</div><h2>Getting <
 <div class="step"><i>1</i><div><b>Choose your primary track</b><span>Pick the track you will follow for your guided 30 days. You can still explore the other four.</span></div></div>
 <div class="step"><i>2</i><div><b>Apply with your resume</b><span>Share your details, college or workplace, qualification and a resume. You receive an application ID.</span></div></div>
 <div class="step"><i>3</i><div><b>Get approved</b><span>Our admissions team reviews your application. You can check its status any time with your application ID and email.</span></div></div>
-<div class="step"><i>4</i><div><b>Pay your one-time fee</b><span>The fee is {FEE} and is payable after approval. It unlocks all five tracks.</span></div></div>
+<div class="step"><i>4</i><div><b>Pay your one-time fee</b><span>The fee is {FEE} and is payable after approval. It unlocks all 5+ tracks.</span></div></div>
 <div class="step"><i>5</i><div><b>Log in to your dashboard</b><span>Use the email and password you created while applying. Change your password from the account menu.</span></div></div>
 <div class="step"><i>6</i><div><b>Start Day 1</b><span>Open your track, watch the first lesson and read the announcements for your batch.</span></div></div></div>
 <div class="grid2 mt2"><div class="card g"><h3>Keep these ready</h3><ul class="ck"><li>An up-to-date resume (PDF or Word)</li><li>Your college or workplace details</li><li>A working email and mobile number</li><li>A laptop or desktop and a stable connection</li></ul></div>
 <div class="card g"><h3>Your Day 1 checklist</h3><ul class="ck"><li>Log in and change your password</li><li>Upload your resume on the Placement page</li><li>Open your track and watch lesson 1</li><li>Read the Announcements</li><li>Note your first assignment's deadline</li></ul></div></div>''',n=5)
 
 # 6 portal
-portal=[('Dashboard','Your progress ring, attendance, scores, next lesson and pending assignments in one place.'),('My Programs','See your track, mentor, dates and the full curriculum. Switch between the five tracks.'),('Learning Materials','Download notes, cheat sheets, templates and slides, organised by module.'),('Video Learning','Watch lessons in order. Completed lessons count towards your progress.'),('Papers & Assessments','Practice quizzes, topic tests, sample and previous papers, and the full mock test.'),('Assignments','Read the brief, upload your work or share a link, and receive marks and feedback.'),('Announcements','Live-session schedules, deadlines, exam dates and program updates.'),('Certificates','Check your eligibility, request your certificate and download it with its verification ID.'),('Placement','Browse jobs and internships, apply, track interviews and upload your resume.')]
+portal=[('Dashboard','Your progress ring, attendance, scores, next lesson and pending assignments in one place.'),('My Programs','See your track, mentor, dates and the full curriculum. Switch between the 5+ tracks.'),('Learning Materials','Download notes, cheat sheets, templates and slides, organised by module.'),('Video Learning','Watch lessons in order. Completed lessons count towards your progress.'),('Papers & Assessments','Practice quizzes, topic tests, sample and previous papers, and the full mock test.'),('Assignments','Read the brief, upload your work or share a link, and receive marks and feedback.'),('Announcements','Live-session schedules, deadlines, exam dates and program updates.'),('Certificates','Check your eligibility, request your certificate and download it with its verification ID.'),('Placement','Browse jobs and internships, apply, track interviews and upload your resume.')]
 page(head('Student portal',6)+f'''<div class="eye">Your dashboard</div><h2>Using your <em>student portal.</em></h2>
 <p class="lead">Everything you need is inside your personal dashboard. Here is what each section does.</p>
 <div class="grid3">{''.join(f'<div class="card g" style="min-height:34mm"><div class="big" style="font-size:22px">{i+1:02d}</div><h3 style="margin-top:4px">{t}</h3><p style="font-size:12.8px;margin:0">{d}</p></div>' for i,(t,d) in enumerate(portal))}</div>
@@ -194,7 +194,7 @@ for i,t in enumerate(TRACKS):
 
 # 12 choosing
 page(head('Choosing your track',12)+f'''<div class="eye">Pick your path</div><h2>Choosing your <em>track.</em></h2>
-<p class="lead">Your single fee unlocks all five tracks. Choose one as your primary track for the guided 30 days, then explore the others on the same login.</p>
+<p class="lead">Your single fee unlocks all 5+ tracks. Choose one as your primary track for the guided 30 days, then explore the others on the same login.</p>
 <table><tr><th>If you enjoy…</th><th style="width:44mm">Choose</th><th style="width:40mm">Good for</th></tr>
 <tr><td>Solving problems with logic and building things people use</td><td><b>Software Development</b></td><td>Developer, QA and tech roles</td></tr>
 <tr><td>Growing audiences, campaigns, numbers and creative content</td><td><b>Digital Marketing</b></td><td>Marketing and performance roles</td></tr>
@@ -254,13 +254,13 @@ page(head('Startup support',16)+f'''<div class="eye">For future founders</div><h
 page(head('Fees & benefits',17)+f'''<div class="eye">Simple pricing</div><h2>Fees &amp; <em>benefits.</em></h2>
 <p class="lead">One payment of <b>{FEE}</b> covers the whole program. There are no per-track fees and no hidden add-ons.</p>
 <table><tr><th>What you get</th><th style="width:28mm">Included</th></tr>
-<tr><td>All five career tracks</td><td><b>Yes</b></td></tr><tr><td>Video lessons, notes, cheat sheets and templates</td><td><b>Yes</b></td></tr><tr><td>Quizzes, sample papers and a full mock test</td><td><b>Yes</b></td></tr><tr><td>Mentor-reviewed assignments and a live project</td><td><b>Yes</b></td></tr><tr><td>Verifiable certificate on completion</td><td><b>Yes</b></td></tr><tr><td>Resume templates and career guidance</td><td><b>Yes</b></td></tr><tr><td>Mock interviews and partner openings*</td><td><b>Yes</b></td></tr><tr><td>Founder Sprint: end-to-end startup support</td><td><b>Yes</b></td></tr><tr><td>Personal dashboard, announcements and reminders</td><td><b>Yes</b></td></tr></table>
+<tr><td>All 5+ career tracks</td><td><b>Yes</b></td></tr><tr><td>Video lessons, notes, cheat sheets and templates</td><td><b>Yes</b></td></tr><tr><td>Quizzes, sample papers and a full mock test</td><td><b>Yes</b></td></tr><tr><td>Mentor-reviewed assignments and a live project</td><td><b>Yes</b></td></tr><tr><td>Verifiable certificate on completion</td><td><b>Yes</b></td></tr><tr><td>Resume templates and career guidance</td><td><b>Yes</b></td></tr><tr><td>Mock interviews and partner openings*</td><td><b>Yes</b></td></tr><tr><td>Founder Sprint: end-to-end startup support</td><td><b>Yes</b></td></tr><tr><td>Personal dashboard, announcements and reminders</td><td><b>Yes</b></td></tr></table>
 <div class="grid2 mt2"><div class="card g"><h3>Admission &amp; payment</h3><ul class="ck"><li>Apply first; pay after approval</li><li>One-time fee of {FEE}</li><li>Payment details are shared by the admissions team</li></ul></div>
 <div class="card g"><h3>Program policies</h3><ul class="ck"><li>Submit original work and follow program guidelines</li><li>Certificates are issued only on meeting the published criteria</li><li>Placement support is assistance only</li></ul></div></div>
 <p class="note mt2">*Placement assistance means resume support, mock interviews and access to partner openings. It is not a guarantee of employment.</p>''',n=17)
 
 # 18 FAQ
-faqs=[('Is this a guaranteed job program?','No. We provide placement assistance: resume support, mock interviews and access to partner openings. Employment is never guaranteed and depends on your performance and employer decisions.'),('How long is the program?','30 days of guided learning, organised into five 6-day sprints.'),('Do I have to pay for each track?','No. A single one-time fee of '+FEE+' gives you access to all five tracks.'),('Who can apply?','Students, freshers, graduates and aspiring professionals. Each track lists its own eligibility criteria.'),('Can I do more than one track?','Your guided 30-day plan follows one primary track. All five are unlocked, so you can explore the others using the same login.'),('I want to start a business. Can you help?','Yes. The Founder Sprint gives you mentorship and guidance from idea validation to your first customers. See pages 15–16.'),('How do I get a certificate?','Meet the completion criteria (progress, assessment score and attendance). Every certificate has a unique ID that can be verified.'),('What do I need to join?','A resume, a working email and phone number, and a laptop or desktop with a stable internet connection.')]
+faqs=[('Is this a guaranteed job program?','No. We provide placement assistance: resume support, mock interviews and access to partner openings. Employment is never guaranteed and depends on your performance and employer decisions.'),('How long is the program?','30 days of guided learning, organised into five 6-day sprints.'),('Do I have to pay for each track?','No. A single one-time fee of '+FEE+' gives you access to all 5+ tracks.'),('Who can apply?','Students, freshers, graduates and aspiring professionals. Each track lists its own eligibility criteria.'),('Can I do more than one track?','Your guided 30-day plan follows one primary track. All 5+ are unlocked, so you can explore the others using the same login.'),('I want to start a business. Can you help?','Yes. The Founder Sprint gives you mentorship and guidance from idea validation to your first customers. See pages 15–16.'),('How do I get a certificate?','Meet the completion criteria (progress, assessment score and attendance). Every certificate has a unique ID that can be verified.'),('What do I need to join?','A resume, a working email and phone number, and a laptop or desktop with a stable internet connection.')]
 page(head('FAQ',18)+f'''<div class="eye">Questions</div><h2>Frequently asked <em>questions.</em></h2><div class="mt">{''.join(f'<div class="card g" style="margin-bottom:8px"><b>{E(q)}</b><p style="margin:3px 0 0;font-size:12px">{E(a)}</p></div>' for q,a in faqs)}</div>''',n=18)
 
 # 19 contact
@@ -271,7 +271,7 @@ page(head('Contact',19)+f'''<div class="eye">Next steps</div><h2>Start your <em>
 <tr><td style="background:none;border-color:rgba(255,255,255,.15);color:var(--gold);font-weight:800;letter-spacing:.12em;font-size:10.5px">ORGANISER</td><td style="background:none;border-color:rgba(255,255,255,.15);color:#fff;font-weight:600">{ORG}, {CITY}</td></tr>
 <tr><td style="background:none;border:0;color:var(--gold);font-weight:800;letter-spacing:.12em;font-size:10.5px">PARTNERS</td><td style="background:none;border:0;color:#fff;font-weight:600">GrainZap IT Solutions · Growth Digital</td></tr></table></div>
 <h3 class="mt2">What happens next</h3>
-<div class="steps"><div class="step"><i>1</i><div><b>Get in touch</b><span>Call or email us with your chosen track, or tell us about your startup idea.</span></div></div><div class="step"><i>2</i><div><b>Apply with your resume</b><span>Our team reviews and approves your application.</span></div></div><div class="step"><i>3</i><div><b>Pay once, start learning</b><span>Your {FEE} fee unlocks all five tracks and the Founder Sprint.</span></div></div></div>
+<div class="steps"><div class="step"><i>1</i><div><b>Get in touch</b><span>Call or email us with your chosen track, or tell us about your startup idea.</span></div></div><div class="step"><i>2</i><div><b>Apply with your resume</b><span>Our team reviews and approves your application.</span></div></div><div class="step"><i>3</i><div><b>Pay once, start learning</b><span>Your {FEE} fee unlocks all 5+ tracks and the Founder Sprint.</span></div></div></div>
 <p class="note mt2">*Placement assistance is not a guarantee of employment. Startup support is mentorship and guidance. Details in this guide may be updated by the Finsang team.</p>''',n=19)
 
 GUIDE = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Finsang 360° Career Program: Program Guide</title>{FONTS}<style>{GUIDE_CSS}</style></head><body>{''.join(pages)}</body></html>'''

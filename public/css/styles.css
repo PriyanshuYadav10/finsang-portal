@@ -1054,3 +1054,21 @@ footer.ft::before{content:'';display:block;height:3px;background:linear-gradient
 .fab .fab-cb .fab-tx{display:none}
 .fab-cb:hover .fab-tip,.fab-cb:focus-visible .fab-tip{opacity:1;transform:translateY(-50%)}
 @media(max-width:700px){.fab .fab-cb{width:54px;height:54px}.fab .fab-cb .fab-ic{width:44px;height:44px}}
+
+/* wide (wordmark) partner logos */
+.plogo img.wide{width:auto!important;height:44px;max-width:132px;padding:4px 8px}.plogo.lg img.wide{height:64px;max-width:190px}
+.oc-m.wide{width:auto;max-width:150px;height:64px;padding:4px 10px}
+.ft .pf img.wide{width:88px;height:42px;padding:3px 6px}
+/* pricing section */
+.price{border-radius:0!important;padding:clamp(24px,4vw,44px)!important;gap:clamp(24px,4vw,56px)!important;position:relative;overflow:hidden}
+.price::after{content:'';position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(rgba(212,179,106,.28),transparent 70%);pointer-events:none}
+.price>*{position:relative;z-index:1}
+.price h2{font-size:clamp(1.6rem,3vw,2.3rem);margin:10px 0 4px}
+.price ul{columns:unset!important;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 28px;margin-top:18px}
+.price li{padding:7px 0;font-size:.98rem;break-inside:avoid}.price li::before{content:'✓';margin-right:10px;font-weight:800}
+.price>div:last-child{text-align:center;padding:28px 36px;border:1px solid rgba(212,179,106,.35);background:rgba(255,255,255,.05);min-width:240px}
+.price .amt{font-size:clamp(2.4rem,4.4vw,3.4rem)!important}
+.price>div:last-child p{margin:8px 0 18px!important;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:#bdbbb3}
+.price .btn{width:100%}
+@media(max-width:860px){.price{grid-template-columns:1fr!important}.price>div:last-child{min-width:0}}
+@media(max-width:520px){.price ul{grid-template-columns:1fr}}
