@@ -61,6 +61,28 @@ const start = async () => {
     ok((await call('admin', 'POST', '/api/admin/users', { name: 'T2', email: 't2@test.dev', role: 'trainer', password: 'trainer-pass-2', programs: ['digital-marketing'] })).s === 200, 'admin creates trainer');
     ok((await call('admin', 'POST', '/api/sync', { changes: { programs: { del: ['software-development'] } } })).s === 403, 'program with students cannot be deleted');
 
+    // student documents
+    const upDoc = async (who, name, body) => { const r = await fetch(base + '/api/upload?kind=document&name=' + encodeURIComponent(name), { method: 'POST', headers: { cookie: jar[who] || '', 'content-type': 'application/octet-stream' }, body }); return { s: r.status, d: await r.json().catch(() => ({})) }; };
+    const up1 = await upDoc('smoke', 'aadhaar.pdf', Buffer.from('%PDF-1.4 id'));
+    ok(up1.s === 200 && up1.d.id, 'student uploads a document');
+    ok((await upDoc('smoke', 'virus.exe', Buffer.from('x'))).s === 400, 'document upload rejects disallowed file types');
+    ok((await upDoc('admin', 'a.pdf', Buffer.from('x'))).s === 403, 'only students can upload documents');
+    ok((await upDoc('anon', 'a.pdf', Buffer.from('x'))).s === 401, 'anonymous document upload blocked');
+    const doc = { id: 'DOCT1', type: 'ID proof', title: 'My Aadhaar', fileId: up1.d.id, status: 'Verified', note: 'x' };
+    ok((await call('smoke', 'POST', '/api/sync', { changes: { documents: { upsert: [doc] } } })).s === 200, 'student saves the document record');
+    const mine = (await call('smoke', 'GET', '/api/bootstrap')).d.state.documents;
+    ok(mine.length === 1 && mine[0].status === 'Pending review' && mine[0].note === '' && mine[0].email === 'smoke@test.dev', 'status and identity are enforced server-side');
+    ok((await call('smoke', 'POST', '/api/sync', { changes: { documents: { upsert: [{ id: 'DOCT2', type: 'ID proof', fileId: 'f'.repeat(24) }] } } })).s === 403, 'a document must point to the student\'s own uploaded file');
+    ok((await call('trainer', 'GET', '/api/bootstrap')).d.state.documents.length === 0, 'trainers cannot see student documents');
+    ok((await fetch(base + '/api/files/' + up1.d.id, { headers: { cookie: jar.trainer } })).status === 403, 'trainers cannot open document files');
+    ok((await fetch(base + '/api/files/' + up1.d.id, { headers: { cookie: jar.smoke } })).status === 200 && (await fetch(base + '/api/files/' + up1.d.id, { headers: { cookie: jar.admin } })).status === 200, 'owner and admin can open the file');
+    ok((await call('admin', 'GET', '/api/bootstrap')).d.state.documents.length === 1, 'admin sees the document');
+    ok((await call('smoke', 'POST', '/api/sync', { changes: { documents: { upsert: [{ id: 'DOCT1', status: 'Verified' }] } } })).s === 200 && (await call('admin', 'GET', '/api/bootstrap')).d.state.documents[0].status === 'Pending review', 'student cannot verify their own document');
+    ok((await call('admin', 'POST', '/api/sync', { changes: { documents: { upsert: [{ id: 'DOCT1', status: 'Verified', note: 'ok' }] } } })).s === 200, 'admin verifies the document');
+    ok((await call('smoke', 'POST', '/api/sync', { changes: { documents: { del: ['DOCT1'] } } })).s === 403, 'verified documents cannot be deleted by the student');
+    ok((await call('admin', 'POST', '/api/sync', { changes: { documents: { upsert: [{ id: 'DOCT1', status: 'Rejected', note: 'blurry' }] } } })).s === 200 && (await call('smoke', 'POST', '/api/sync', { changes: { documents: { del: ['DOCT1'] } } })).s === 200, 'rejected documents can be deleted by the student');
+    ok((await fetch(base + '/api/files/' + up1.d.id, { headers: { cookie: jar.smoke } })).status === 404, 'deleting a document removes its file');
+
     // website content (CMS)
     const cmsBody = { content: { hero: { eyebrow: 'E', title: 'Hello world', highlight: 'Go', lead: 'L'.repeat(900) }, faqs: [['Q1?', 'A1'], ['', 'dropped'], ['Q2?', 'A2']],
       partners: [{ id: 'Acme Co!', name: 'Acme', color: 'red', contrib: ['x', '', 'y'] }, { id: 'ACMECO', name: 'dup' }], about: { cards: [{ icon: '🎯', h: 'Mission', p: 'p' }, { h: '' }] }, evil: { a: 1 } } };

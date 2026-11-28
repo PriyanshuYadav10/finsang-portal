@@ -8,11 +8,42 @@ FS.route('/student/(\\w+)',([pg],q)=>{
  if(!FS.guard('student'))return;
  const me=FS.studentRec(FS.user().email);
  if(!me){FS.mountPortal('student',pg,'Student Portal',`<div class="empty card">No enrollment found for this account.</div>`);return}
- const pages={dashboard:sDash,programs:sPrograms,materials:sMaterials,videos:sVideos,assessments:sAssess,assignments:sAssign,announcements:sAnn,certificates:sCert,placement:sPlace};
- const titles={dashboard:'Dashboard',programs:'My Programs',materials:'Learning Materials',videos:'Video Learning',assessments:'Sample Papers & Assessments',assignments:'Assignments & Projects',announcements:'Announcements & Notifications',certificates:'Certificates',placement:'Placement & Career Opportunities'};
+ const pages={dashboard:sDash,profile:sProfile,programs:sPrograms,materials:sMaterials,videos:sVideos,assessments:sAssess,assignments:sAssign,announcements:sAnn,certificates:sCert,placement:sPlace};
+ const titles={dashboard:'Dashboard',profile:'My Profile',programs:'My Programs',materials:'Learning Materials',videos:'Video Learning',assessments:'Sample Papers & Assessments',assignments:'Assignments & Projects',announcements:'Announcements & Notifications',certificates:'Certificates',placement:'Placement & Career Opportunities'};
  if(!pages[pg]){FS.go('#/student/dashboard');return}
  FS.mountPortal('student',pg,titles[pg],pages[pg](me,q));
 });
+
+/* ---- My Profile: personal details + document locker ---- */
+const DOCT=[['ID proof','🪪','Aadhaar, PAN, passport or driving licence'],['Photograph','🖼️','A recent passport-size photo'],['10th marksheet','📄','Class 10 marksheet or certificate'],['12th marksheet','📄','Class 12 marksheet or certificate'],['Graduation / diploma marksheet','🎓','Latest semester or final marksheet'],['Resume / CV','📎','PDF or Word'],['Other document','📁','Certificates, letters or anything else']];
+const dstat=s=>`<span class="tag ${s==='Verified'?'g':s==='Rejected'?'r':'a'}">${E(s)}</span>`;
+const fsize=n=>n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';
+function sProfile(me){
+ const docs=FS.state.documents.filter(d=>d.email===me.email),has=t=>docs.some(d=>d.type===t),anyMark=['10th marksheet','12th marksheet','Graduation / diploma marksheet'].some(has);
+ const key=[['ID proof',has('ID proof')],['Photograph',has('Photograph')],['A marksheet',anyMark],['Resume / CV',has('Resume / CV')]],done=key.filter(k=>k[1]).length,pct=Math.round(done/key.length*100);
+ const p=FS.program(me.program),rej=docs.filter(d=>d.status==='Rejected').length;
+ const info=[['Full name',me.name],['Email',me.email],['Mobile',me.phone||'—'],['City',me.city||'—'],['College / school',me.college||'—'],['Focus track',p?p.name:'—'],['Student ID',me.id],['Joined',FS.fmt(me.joined)]];
+ return `<div class="card pf-h"><div class="av big">${E(initials(me.name))}</div><div style="flex:1;min-width:0"><h2>${E(me.name)}</h2><p class="hint">${E(me.email)} · ${E(p?p.name:'')}</p>
+   <div class="pf-bar"><div class="sd-pl"><span>Profile completeness</span><b>${pct}%</b></div>${FS.bar(pct)}<div class="pf-ck">${key.map(k=>`<span class="${k[1]?'y':''}">${k[1]?'✓':'○'} ${k[0]}</span>`).join('')}</div></div></div></div>
+  ${rej?`<div class="alert e">${rej} document${rej>1?'s were':' was'} rejected. Open it to read the reason, then upload a corrected copy.</div>`:''}
+  <div class="pf-g"><div class="card"><div class="ch-h"><h3>Personal details</h3></div><dl class="pf-d">${info.map(i=>`<div><dt>${i[0]}</dt><dd>${E(i[1])}</dd></div>`).join('')}</dl><p class="hint" style="margin-top:12px">To change these details, contact the admissions team.</p></div>
+  <div class="card"><div class="ch-h"><h3>My documents</h3><button class="btn btn-a btn-sm" onclick="A.docForm()">+ Upload document</button></div>
+   <p class="hint" style="margin:-4px 0 14px">PDF, JPG, PNG or Word, up to 10 MB each. Only you and the admissions team can see your documents.</p>
+   ${DOCT.map(t=>{const l=docs.filter(d=>d.type===t[0]);return `<div class="dt"><div class="dt-h"><i>${t[1]}</i><div style="flex:1;min-width:0"><b>${E(t[0])}</b><small>${E(t[2])}</small></div><button class="btn btn-o btn-sm" onclick="A.docForm('${E(t[0])}')">${l.length?'Add another':'Upload'}</button></div>
+    ${l.map(d=>`<div class="df"><div class="df-m"><b>${E(d.title)}</b><small>${E(d.fileName)} · ${fsize(+d.size||0)} · ${FS.fmt(d.date)}</small>${d.status==='Rejected'&&d.note?`<em>Reason: ${E(d.note)}</em>`:''}</div>${dstat(d.status)}<button class="ib" title="Open" onclick="window.open(FS.fileUrl('${d.fileId}'),'_blank','noopener')">↗</button>${d.status==='Verified'?'':`<button class="ib del" title="Delete" onclick="A.docDel('${d.id}')">🗑</button>`}</div>`).join('')}</div>`}).join('')}</div></div>`}
+A.docForm=type=>FS.modal(`<h3>Upload a document</h3><form onsubmit="return A.docSave(event)"><div class="fg"><label>Document type *</label><select name="type" required>${DOCT.map(t=>`<option ${t[0]===type?'selected':''}>${E(t[0])}</option>`).join('')}</select></div>
+ <div class="fg"><label>Title <span class="hint" style="display:inline">(optional)</span></label><input name="title" maxlength="120" placeholder="For example: Aadhaar card (front and back)"></div>
+ <div class="fg"><label>File *</label><label class="drop-file"><input name="file" type="file" required accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" onchange="this.parentNode.querySelector('em').textContent=this.files[0]?this.files[0].name:'Choose a file'"><span class="df-i">📎</span><span class="df-t"><b>Choose a file</b><em>Choose a file</em></span><span class="df-b">Browse</span></label><span class="hint">PDF, JPG, PNG or Word · up to 10 MB</span></div>
+ <div class="row"><button class="btn btn-a" id="dsb">Upload</button><button type="button" class="btn btn-o" onclick="FS.closeModal()">Cancel</button></div></form>`);
+A.docSave=async e=>{e.preventDefault();const f=e.target,file=f.file.files[0],btn=document.getElementById('dsb');if(!file)return false;
+ if(file.size>10*1024*1024){FS.toast('File must be under 10 MB.');return false}
+ btn.disabled=true;btn.textContent='Uploading…';
+ try{const up=await FS.upload(file,'document'),me=FS.studentRec(FS.user().email);
+  FS.state.documents.push({id:FS.uid('DOC'),email:me.email,name:me.name,type:f.type.value,title:f.title.value.trim()||up.name,fileId:up.id,fileName:up.name,size:up.size,date:FS.day(0),status:'Pending review',note:''});
+  if(f.type.value==='Resume / CV'){me.resume=up.name;me.resumeId=up.id}
+  await FS.save();FS.closeModal();FS.toast('Document uploaded. It will be reviewed by the team.');FS.render(true)}
+ catch(x){FS.err(x);btn.disabled=false;btn.textContent='Upload'}return false};
+A.docDel=async id=>{if(!confirm('Delete this document?'))return;FS.state.documents=FS.state.documents.filter(d=>d.id!==id);await FS.save();FS.toast('Document deleted');FS.render(true)};
 
 function sDash(me){
  const p=FS.program(me.program),prog=FS.progressOf(me),sc=FS.scoreOf(me),el=FS.eligible(me),cert=FS.certOf(me.email),C=FS.state.criteria;

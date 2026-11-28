@@ -1,10 +1,11 @@
 /* Role-based access rules for the document collections.
    The browser keeps a local copy of the data it is allowed to see and syncs changes back through /api/sync;
    every change is re-validated here, so the client is never trusted. */
-const { store } = require('./db');
+const { store, q } = require('./db');
+const DOC_TYPES = ['ID proof', 'Photograph', '10th marksheet', '12th marksheet', 'Graduation / diploma marksheet', 'Resume / CV', 'Other document'];
 
 const COLLS = ['programs', 'students', 'applications', 'submissions', 'results', 'certs', 'jobApps', 'interviews',
-  'attendanceLog', 'jobs', 'announcements', 'employers', 'messages'];
+  'attendanceLog', 'jobs', 'announcements', 'employers', 'messages', 'documents'];
 
 class Deny extends Error {}
 const deny = (m) => { throw new Deny(m); };
@@ -29,7 +30,7 @@ function canRead(user, coll, d) {
   // student
   if (coll === 'programs') return d.published !== false;
   if (['jobs', 'announcements'].includes(coll)) return true;
-  if (['students', 'submissions', 'results', 'jobApps', 'interviews', 'certs'].includes(coll)) return d.email === user.email;
+  if (['students', 'submissions', 'results', 'jobApps', 'interviews', 'certs', 'documents'].includes(coll)) return d.email === user.email;
   return false;
 }
 function outbound(coll, d) {
@@ -107,7 +108,12 @@ const WRITERS = {
       if (!a.title) deny('Title is required.'); return a;
     },
     employers: (nd) => ({ id: str(nd.id, 40), name: str(nd.name, 200), contact: str(nd.contact, 200), phone: str(nd.phone, 40), notes: str(nd.notes, 1000) }),
-    messages: (nd, od) => { if (!od) deny('Not allowed.'); return { ...od, read: !!nd.read }; }
+    messages: (nd, od) => { if (!od) deny('Not allowed.'); return { ...od, read: !!nd.read }; },
+    documents: (nd, od) => {
+      if (!od) deny('Documents are uploaded by students.');
+      if (!['Pending review', 'Verified', 'Rejected'].includes(nd.status)) deny('Invalid status.');
+      return { ...od, status: nd.status, note: str(nd.note, 300) };
+    }
   },
   trainer: {
     programs: (nd, od, u) => {
@@ -154,6 +160,19 @@ const WRITERS = {
       if (store.all('jobApps').some((a) => a.email === u.email && a.jobId === nd.jobId)) deny('Already applied.');
       return { id: str(nd.id, 40), email: u.email, name: u.name, jobId: nd.jobId, date: str(nd.date, 10), status: 'Applied' };
     },
+    documents: (nd, od, u) => {
+      if (od) {
+        if (od.email !== u.email) deny('Not allowed.');
+        if (od.status === 'Verified') deny('Verified documents cannot be changed.');
+        return { ...od, title: str(nd.title, 120) };
+      }
+      if (!studentOf(u.email)) deny('No enrollment.');
+      if (!DOC_TYPES.includes(nd.type)) deny('Choose a document type.');
+      const f = q('SELECT * FROM files WHERE id=?').get(str(nd.fileId, 80));
+      if (!f || f.kind !== 'document' || f.owner !== u.email) deny('Upload the file first.');
+      if (store.all('documents').filter((d) => d.email === u.email).length >= 30) deny('You can keep up to 30 documents.');
+      return { id: str(nd.id, 40), email: u.email, name: u.name, type: nd.type, title: str(nd.title, 120) || f.name, fileId: f.id, fileName: f.name, size: f.size, date: str(nd.date, 10), status: 'Pending review', note: '' };
+    },
     students: (nd, od, u) => {
       if (!od || od.email !== u.email) deny('Not allowed.');
       if (!store.get('programs', nd.program)) deny('Unknown program.');
@@ -176,13 +195,18 @@ function validateWrite(user, coll, nd, od) {
 
 function validateDelete(user, coll, od) {
   if (!od) return;
+  if (user.role === 'student' && coll === 'documents') {
+    if (od.email !== user.email) deny('Not allowed.');
+    if (od.status === 'Verified') deny('Verified documents cannot be deleted.');
+    return;
+  }
   if (user.role !== 'admin') deny('Only admins can delete records.');
   if (coll === 'programs') {
     if (store.all('students').some((s) => s.program === od.id)) deny('Cannot delete a program that has enrolled students. Move them first or unpublish it.');
   }
   if (coll === 'students') deny('Delete students from the Students page.');
   if (coll === 'applications' || coll === 'jobs' || coll === 'announcements' || coll === 'messages' || coll === 'employers' ||
-      coll === 'certs' || coll === 'jobApps' || coll === 'interviews' || coll === 'submissions' || coll === 'results' || coll === 'attendanceLog' || coll === 'programs') return;
+      coll === 'certs' || coll === 'documents' || coll === 'jobApps' || coll === 'interviews' || coll === 'submissions' || coll === 'results' || coll === 'attendanceLog' || coll === 'programs') return;
   deny('Not allowed.');
 }
 
@@ -216,4 +240,4 @@ function cleanSiteContent(c) {
   if (c.footer) o.footer = { about: t(c.footer.about, 320) };
   return o;
 }
-module.exports = { cleanSiteContent, COLLS, Deny, canRead, outbound, validateWrite, validateDelete, clamp };
+module.exports = { DOC_TYPES, cleanSiteContent, COLLS, Deny, canRead, outbound, validateWrite, validateDelete, clamp };

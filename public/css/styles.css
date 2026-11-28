@@ -1080,3 +1080,20 @@ footer.ft::before{content:'';display:block;height:3px;background:linear-gradient
 .cr{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
 
 .wy-k{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))!important}
+
+/* My Profile + documents */
+.pf-h{display:flex;gap:20px;align-items:center;margin-bottom:20px;flex-wrap:wrap}.pf-h h2{font-size:1.5rem}
+.av.big{width:76px;height:76px;font-size:1.5rem;flex:none}
+.pf-bar{margin-top:14px;max-width:560px}.pf-bar .sd-pl span{color:var(--mut)}.pf-bar .sd-pl b{color:var(--gold-dark)}
+.pf-ck{display:flex;gap:6px 16px;flex-wrap:wrap;margin-top:10px;font-size:.82rem;color:var(--mut)}.pf-ck .y{color:#1d8a4b;font-weight:700}
+.pf-g{display:grid;grid-template-columns:340px minmax(0,1fr);gap:22px;align-items:start}
+.pf-d{display:grid;gap:0}.pf-d>div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #eeeadb}.pf-d>div:last-child{border:0}
+.pf-d dt{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--mut)}.pf-d dd{font-weight:600;text-align:right;word-break:break-word;font-size:.92rem}
+.dt{border:1px solid var(--line);margin-bottom:12px}.dt-h{display:flex;gap:12px;align-items:center;padding:12px 14px;background:#fcfbf7}
+.dt-h>i{font-style:normal;width:40px;height:40px;display:grid;place-items:center;background:linear-gradient(135deg,#f8efd0,#ead59b);flex:none;font-size:1.2rem}
+.dt-h b{display:block;font-size:.95rem}.dt-h small{display:block;color:var(--mut);font-size:.78rem}
+.df{display:flex;gap:10px;align-items:center;padding:11px 14px;border-top:1px solid #eeeadb}
+.df-m{flex:1;min-width:0}.df-m b{display:block;font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.df-m small{display:block;color:var(--mut);font-size:.76rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.df-m em{display:block;font-style:normal;color:#b3262b;font-size:.8rem;margin-top:3px;white-space:normal}
+.df .drop-file{padding:0}
+@media(max-width:1000px){.pf-g{grid-template-columns:1fr}}
+@media(max-width:600px){.dt-h{flex-wrap:wrap}.df{flex-wrap:wrap}.pf-h{gap:14px}}

@@ -159,7 +159,10 @@ app.post('/api/sync', A.requireUser, wrap((req, res) => {
   store.tx(() => {
     for (const [coll, c] of Object.entries(ch)) {
       if (!acl.COLLS.includes(coll)) throw new acl.Deny('Unknown collection.');
-      for (const id of (c.del || [])) acl.validateDelete(u, coll, store.get(coll, id)) , store.del(coll, id);
+      for (const id of (c.del || [])) {
+        const od = store.get(coll, id); acl.validateDelete(u, coll, od); store.del(coll, id);
+        if (coll === 'documents' && od && od.fileId) { q('DELETE FROM files WHERE id=?').run(od.fileId); try { fs.unlinkSync(path.join(UPLOAD_DIR, od.fileId)); } catch (e) {} }
+      }
       for (const d of (c.upsert || [])) {
         const od = store.get(coll, d && d.id);
         const nd = acl.validateWrite(u, coll, d, od);
@@ -191,16 +194,17 @@ const studentRec = (email) => store.all('students').find((s) => s.email === emai
 
 /* ---------------- files ---------------- */
 const EXT = { material: ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'zip', 'xls', 'xlsx', 'txt', 'png', 'jpg', 'jpeg', 'mp4'],
-  submission: ['pdf', 'doc', 'docx', 'zip', 'txt', 'png', 'jpg', 'jpeg', 'ppt', 'pptx', 'xls', 'xlsx'], resume: ['pdf', 'doc', 'docx'] };
+  submission: ['pdf', 'doc', 'docx', 'zip', 'txt', 'png', 'jpg', 'jpeg', 'ppt', 'pptx', 'xls', 'xlsx'], resume: ['pdf', 'doc', 'docx'],
+  document: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'] };
 const MIME = { pdf: 'application/pdf', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', mp4: 'video/mp4', txt: 'text/plain; charset=utf-8' };
 app.post('/api/upload', (req, res, next) => {
   const kind = String(req.query.kind || '');
   const anon = !req.user;
   if (!EXT[kind]) return res.status(400).json({ error: 'Bad upload kind.' });
   if (anon && kind !== 'resume') return res.status(401).json({ error: 'Please log in.' });
-  if (!anon && ((kind === 'material' && req.user.role === 'student') || (kind === 'submission' && req.user.role !== 'student'))) return res.status(403).json({ error: 'Not allowed.' });
+  if (!anon && ((kind === 'material' && req.user.role === 'student') || (kind === 'submission' && req.user.role !== 'student') || (kind === 'document' && req.user.role !== 'student'))) return res.status(403).json({ error: 'Not allowed.' });
   (anon ? A.limit('upl', 10, 3600000) : (_q, _s, n) => n())(req, res, () =>
-    express.raw({ type: () => true, limit: kind === 'resume' ? '5mb' : '25mb' })(req, res, next));
+    express.raw({ type: () => true, limit: kind === 'resume' ? '5mb' : kind === 'document' ? '10mb' : '25mb' })(req, res, next));
 }, wrap((req, res) => {
   const name = path.basename(str(req.query.name, 200)).replace(/[^\w.\- ()]/g, '_');
   const ext = (name.split('.').pop() || '').toLowerCase();
@@ -215,7 +219,7 @@ app.get('/api/files/:id', A.requireUser, wrap((req, res) => {
   const f = q('SELECT * FROM files WHERE id=?').get(String(req.params.id));
   if (!f || !/^[a-f0-9]{24}$/.test(f.id)) return res.status(404).json({ error: 'Not found.' });
   const u = req.user;
-  const ok = u.role === 'admin' || (f.kind === 'material') || f.owner === u.email || (u.role === 'trainer' && f.kind !== 'material');
+  const ok = u.role === 'admin' || (f.kind === 'material') || f.owner === u.email || (u.role === 'trainer' && f.kind !== 'material' && f.kind !== 'document');
   if (!ok) return res.status(403).json({ error: 'Not allowed.' });
   const ext = f.name.split('.').pop().toLowerCase();
   const inline = req.query.dl !== '1' && MIME[ext];
@@ -292,7 +296,10 @@ admin.delete('/students/:id', wrap((req, res) => {
   store.tx(() => {
     const u = users.byEmail(s.email); if (u) users.remove(u.id);
     store.del('students', s.id); store.del('watched', s.email); store.del('certReq', s.email);
-    for (const c of ['submissions', 'results', 'jobApps', 'interviews']) for (const d of store.all(c)) if (d.email === s.email) store.del(c, d.id);
+    for (const c of ['submissions', 'results', 'jobApps', 'interviews', 'documents']) for (const d of store.all(c)) if (d.email === s.email) {
+      store.del(c, d.id);
+      if (c === 'documents' && d.fileId) { q('DELETE FROM files WHERE id=?').run(d.fileId); try { fs.unlinkSync(path.join(UPLOAD_DIR, d.fileId)); } catch (e) {} }
+    }
   });
   res.json({ ok: true });
 }));
@@ -343,6 +350,9 @@ app.use('/api', (req, res) => res.status(404).json({ error: 'Not found.' }));
 
 /* ---------------- static site ---------------- */
 app.get('/favicon.ico', (req, res) => res.status(204).end());
+// Android app link verification (express.static skips dot-folders)
+app.get('/.well-known/assetlinks.json', (req, res) => res.type('application/json').sendFile(path.join(__dirname, '..', 'public', '.well-known', 'assetlinks.json')));
+app.get('/sw.js', (req, res) => { res.setHeader('Cache-Control', 'no-cache'); res.sendFile(path.join(__dirname, '..', 'public', 'sw.js')); });
 app.use(express.static(path.join(__dirname, '..', 'public'), { extensions: ['html'], maxAge: 0, index: 'index.html' }));
 app.use((req, res) => res.status(404).sendFile(path.join(__dirname, '..', 'public', 'index.html')));
 

@@ -26,7 +26,7 @@ FS.upload=async(file,kind)=>{
 FS.fileUrl=(id,dl)=>'/api/files/'+id+(dl?'?dl=1':'');
 
 /* ---- state ---- */
-const ARR=['programs','students','applications','submissions','results','certs','jobApps','interviews','attendanceLog','jobs','announcements','employers','messages'];
+const ARR=['programs','students','applications','submissions','results','certs','jobApps','interviews','attendanceLog','jobs','announcements','employers','messages','documents'];
 const empty=()=>{const s={watched:{},certReq:[],users:[],criteria:{progress:80,score:60,attendance:75},site:{fee:0,email:'',phone:'',address:'',applicationsOpen:true},content:{}};ARR.forEach(k=>s[k]=[]);return s};
 FS.state=empty();FS.me=null;
 let snap={};

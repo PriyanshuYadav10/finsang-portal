@@ -37,7 +37,7 @@ FS.route('/register',(_,q)=>{
  FS.mountAuth(`<div class="ax-h"><span class="ax-ic">📝</span><div><h1>Apply to the program</h1><p>Create your account by applying. After admin approval you can log in to your dashboard.</p></div></div>
  ${FS.state.site.applicationsOpen?FS.applyForm(q.get('p')||''):'<div class="alert w">Applications are currently closed.</div>'}`,
  {wide:1,pill:'Join the program',title:'Start your <em>360° journey.</em>',lead:'One application. One fee. All 5+ career tracks, plus startup support if you want to build something of your own.',
-  bullets:[['📝','Apply in about 3 minutes','Share your details and resume. No payment to apply.'],['✅','Approval by our team','You can track your status any time with your application ID.'],['🔓','Pay once, unlock everything','The fee is payable only after approval.']],
+  bullets:[['📝','Apply in about 3 minutes','Share your details. No payment to apply.'],['✅','Approval by our team','You can track your status any time with your application ID.'],['🔓','Pay once, unlock everything','The fee is payable only after approval.']],
   alt:'Already applied? <a href="#/login">Log in</a> · <a href="#/track">Track status</a>'});
 });
 
@@ -55,7 +55,7 @@ A.reset=async(ev,token)=>{ev.preventDefault();try{await FS.api('POST','/api/rese
 
 FS.route('/track',(_,q)=>{
  const id=(q.get('id')||'').trim(),em=(q.get('email')||'').trim().toLowerCase();
- const steps=[['📝','Submitted','We receive your application and send you an application ID.'],['🔍','Under review','Our admissions team reviews your details and resume.'],['✅','Decision','You are approved, or told what is needed to re-apply.'],['🔓','Access granted','Pay the one-time fee and log in to your dashboard.']];
+ const steps=[['📝','Submitted','We receive your application and send you an application ID.'],['🔍','Under review','Our admissions team reviews your application details.'],['✅','Decision','You are approved, or told what is needed to re-apply.'],['🔓','Access granted','Pay the one-time fee and log in to your dashboard.']];
  FS.mountPublic(`<section class="ph"><div class="wrap"><h1>Track Your Application</h1><p>Check where your application stands. You will need your application ID and the email you applied with.</p></div></section>
  <section class="sec"><div class="wrap"><div class="tk-grid"><div><div class="card tk-f"><h2>Check your status</h2><form onsubmit="return A.track(event)"><div class="fg"><label>Application ID *</label><input name="id" value="${E(id)}" placeholder="APP-2026-1001" required autocomplete="off"><span class="hint">Shown when you submitted your application.</span></div><div class="fg"><label>Email address *</label><input name="email" type="email" value="${E(em)}" placeholder="The email you applied with" required></div><button class="btn btn-a ax-btn">Check status <span class="ar">→</span></button></form></div><div id="tres"></div></div>
   <aside class="card tk-s"><h3>How review works</h3><ol class="tk-steps">${steps.map(x=>`<li><i>${x[0]}</i><div><b>${x[1]}</b><span>${x[2]}</span></div></li>`).join('')}</ol><p class="hint" style="margin-top:14px">Lost your ID? <a href="#/contact">Contact admissions</a> and we will help.</p></aside></div></div></section>`,'#/track');

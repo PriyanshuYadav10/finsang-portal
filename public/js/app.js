@@ -5,7 +5,7 @@ FS.route=(re,fn)=>FS.routes.push({re:new RegExp('^'+re+'$'),fn});
 const $app=()=>document.getElementById('app');
 const PUB=[['#/','Home'],['#/programs','Programs'],['#/about','About'],['#/partners','Partners'],['#/contact','Contact'],['#/faq','FAQ']];
 FS.NAV={
- student:[['dashboard','🏠','Dashboard'],['programs','🎓','My Programs'],['materials','📚','Learning Materials'],['videos','▶️','Video Learning'],['assessments','📝','Papers & Assessments'],['assignments','📤','Assignments'],['announcements','🔔','Announcements'],['certificates','🏅','Certificates'],['placement','💼','Placement']],
+ student:[['dashboard','🏠','Dashboard'],['profile','👤','My Profile'],['programs','🎓','My Programs'],['materials','📚','Learning Materials'],['videos','▶️','Video Learning'],['assessments','📝','Papers & Assessments'],['assignments','📤','Assignments'],['announcements','🔔','Announcements'],['certificates','🏅','Certificates'],['placement','💼','Placement']],
  admin:[['overview','📊','Overview'],['students','👥','Students & Applications'],['programs','🎓','Programs'],['content','🗂️','Learning Content'],['assessments','📝','Assessments'],['certificates','🏅','Certificates'],['placement','💼','Placement'],['announcements','📣','Announcements'],['staff','🏫','Trainers & Staff'],['inbox','✉️','Messages'],['website','🌐','Website Content'],['reports','📈','Reports & Analytics'],['settings','⚙️','Settings']],
  trainer:[['overview','🏠','Overview'],['students','👥','My Students'],['content','🗂️','Study Materials & Videos'],['assignments','📤','Assignments & Reviews'],['assessments','📝','Assessments'],['attendance','🗓️','Attendance']]
 };
@@ -39,7 +39,7 @@ function footer(){const S=FS.state.site||{},org=String(FS.ORGS.finsang.name).rep
  <div class="ft-bot"><span>© ${yr} ${E(org)}. All rights reserved.</span><nav><a href="#/privacy">Privacy policy</a><a href="#/terms">Terms &amp; conditions</a></nav><span class="ft-note">Placement assistance is not a guarantee of employment.</span></div></div></footer>${FS.fab?FS.fab():''}`}
 
 /* ---------- Portal shell (student / trainer / admin) ---------- */
-FS.NAVG={student:[['Learn',['dashboard','programs','materials','videos']],['Practice',['assessments','assignments']],['Stay updated',['announcements','certificates','placement']]],
+FS.NAVG={student:[['Learn',['dashboard','profile','programs','materials','videos']],['Practice',['assessments','assignments']],['Stay updated',['announcements','certificates','placement']]],
  admin:[['Overview',['overview']],['People',['students','staff','inbox']],['Learning',['programs','content','assessments']],['Outcomes',['certificates','placement','announcements']],['Website',['website']],['Insights',['reports','settings']]],
  trainer:[['Teach',['overview','students','content']],['Evaluate',['assignments','assessments','attendance']]]};
 FS.ROLE={student:'Student Portal',trainer:'Mentor Panel',admin:'Admin Console'};

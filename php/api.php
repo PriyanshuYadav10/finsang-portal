@@ -170,7 +170,10 @@ route('POST', '/sync', function () use ($user) {
     foreach ($ch as $coll => $c) {
       if (!in_array($coll, COLLS, true)) deny('Unknown collection.');
       if (!is_array($c)) continue;
-      foreach (arr($c['del'] ?? null) as $id) { validate_delete($user, $coll, store::get($coll, $id)); store::del($coll, $id); }
+      foreach (arr($c['del'] ?? null) as $id) {
+        $od = store::get($coll, $id); validate_delete($user, $coll, $od); store::del($coll, $id);
+        if ($coll === 'documents' && $od && !empty($od['fileId']) && preg_match('/^[a-f0-9]{24}$/', $od['fileId'])) { q('DELETE FROM files WHERE id=?', [$od['fileId']]); @unlink(upload_dir() . '/' . $od['fileId']); }
+      }
       foreach (arr($c['upsert'] ?? null) as $d) {
         $od = (is_array($d) && isset($d['id']) && is_scalar($d['id'])) ? store::get($coll, $d['id']) : null;
         $nd = validate_write($user, $coll, $d, $od);
@@ -202,16 +205,17 @@ route('POST', '/sync', function () use ($user) {
 
 /* ---------------- files ---------------- */
 const EXT = ['material' => ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'zip', 'xls', 'xlsx', 'txt', 'png', 'jpg', 'jpeg', 'mp4'],
-  'submission' => ['pdf', 'doc', 'docx', 'zip', 'txt', 'png', 'jpg', 'jpeg', 'ppt', 'pptx', 'xls', 'xlsx'], 'resume' => ['pdf', 'doc', 'docx']];
+  'submission' => ['pdf', 'doc', 'docx', 'zip', 'txt', 'png', 'jpg', 'jpeg', 'ppt', 'pptx', 'xls', 'xlsx'], 'resume' => ['pdf', 'doc', 'docx'],
+  'document' => ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx']];
 const MIMES = ['pdf' => 'application/pdf', 'png' => 'image/png', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'mp4' => 'video/mp4', 'txt' => 'text/plain; charset=utf-8'];
 
 route('POST', '/upload', function () use ($user) {
   $kind = (string)($_GET['kind'] ?? '');
   if (!isset(EXT[$kind])) fail('Bad upload kind.');
   if (!$user && $kind !== 'resume') fail('Please log in.', 401);
-  if ($user && (($kind === 'material' && $user['role'] === 'student') || ($kind === 'submission' && $user['role'] !== 'student'))) fail('Not allowed.', 403);
+  if ($user && (($kind === 'material' && $user['role'] === 'student') || ($kind === 'submission' && $user['role'] !== 'student') || ($kind === 'document' && $user['role'] !== 'student'))) fail('Not allowed.', 403);
   if (!$user) limit('upl', 10, 3600000);
-  $max = $kind === 'resume' ? 5 * 1048576 : 25 * 1048576;
+  $max = $kind === 'resume' ? 5 * 1048576 : ($kind === 'document' ? 10 * 1048576 : 25 * 1048576);
   if ((int)($_SERVER['CONTENT_LENGTH'] ?? 0) > $max) fail('File too large.', 413);
   $in = fopen('php://input', 'rb'); $data = stream_get_contents($in, $max + 1); fclose($in);
   if ($data === false || $data === '') fail('Empty file.');
@@ -229,7 +233,7 @@ route('GET', '/files/([^/]+)', function ($fid) use ($user) {
   $f = preg_match('/^[a-f0-9]{24}$/', $fid) ? q('SELECT * FROM files WHERE id=?', [$fid])->fetch() : null;
   $file = $f ? upload_dir() . '/' . $f['id'] : '';
   if (!$f || !is_file($file)) fail('Not found.', 404);
-  $ok = $user['role'] === 'admin' || $f['kind'] === 'material' || $f['owner'] === $user['email'] || ($user['role'] === 'trainer' && $f['kind'] !== 'material');
+  $ok = $user['role'] === 'admin' || $f['kind'] === 'material' || $f['owner'] === $user['email'] || ($user['role'] === 'trainer' && $f['kind'] !== 'material' && $f['kind'] !== 'document');
   if (!$ok) fail('Not allowed.', 403);
   $ext = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));
   $inline = (($_GET['dl'] ?? '') !== '1') && isset(MIMES[$ext]);
@@ -318,7 +322,10 @@ if (strncmp($path, '/admin/', 7) === 0) {
     store::tx(function () use ($s) {
       $u = users::byEmail($s['email']); if ($u) users::remove($u['id']);
       store::del('students', $s['id']); store::del('watched', $s['email']); store::del('certReq', $s['email']);
-      foreach (['submissions', 'results', 'jobApps', 'interviews'] as $c) foreach (store::all($c) as $d) if (($d['email'] ?? null) === $s['email']) store::del($c, $d['id']);
+      foreach (['submissions', 'results', 'jobApps', 'interviews', 'documents'] as $c) foreach (store::all($c) as $d) if (($d['email'] ?? null) === $s['email']) {
+        store::del($c, $d['id']);
+        if ($c === 'documents' && !empty($d['fileId']) && preg_match('/^[a-f0-9]{24}$/', $d['fileId'])) { q('DELETE FROM files WHERE id=?', [$d['fileId']]); @unlink(upload_dir() . '/' . $d['fileId']); }
+      }
     });
     out(['ok' => true]);
   });

@@ -4,7 +4,8 @@
 require_once __DIR__ . '/db.php';
 
 const COLLS = ['programs', 'students', 'applications', 'submissions', 'results', 'certs', 'jobApps', 'interviews',
-  'attendanceLog', 'jobs', 'announcements', 'employers', 'messages'];
+  'attendanceLog', 'jobs', 'announcements', 'employers', 'messages', 'documents'];
+const DOC_TYPES = ['ID proof', 'Photograph', '10th marksheet', '12th marksheet', 'Graduation / diploma marksheet', 'Resume / CV', 'Other document'];
 
 function in_prog(array $u, $pid): bool { return in_array($pid, arr($u['programs'] ?? []), true); }
 function student_of(string $email): ?array { foreach (store::all('students') as $s) if (($s['email'] ?? null) === $email) return $s; return null; }
@@ -21,7 +22,7 @@ function can_read(?array $user, string $coll, array $d): bool {
   }
   if ($coll === 'programs') return ($d['published'] ?? true) !== false;
   if (in_array($coll, ['jobs', 'announcements'], true)) return true;
-  if (in_array($coll, ['students', 'submissions', 'results', 'jobApps', 'interviews', 'certs'], true)) return ($d['email'] ?? null) === $user['email'];
+  if (in_array($coll, ['students', 'submissions', 'results', 'jobApps', 'interviews', 'certs', 'documents'], true)) return ($d['email'] ?? null) === $user['email'];
   return false;
 }
 function outbound(string $coll, array $d): array {
@@ -131,6 +132,11 @@ function writer(string $role, string $coll): ?callable {
       },
       'employers' => fn($nd) => ['id' => str($nd['id'], 40), 'name' => str($nd['name'] ?? '', 200), 'contact' => str($nd['contact'] ?? '', 200), 'phone' => str($nd['phone'] ?? '', 40), 'notes' => str($nd['notes'] ?? '', 1000)],
       'messages' => function ($nd, $od) { if (!$od) deny('Not allowed.'); return array_merge($od, ['read' => !empty($nd['read'])]); },
+      'documents' => function ($nd, $od) {
+        if (!$od) deny('Documents are uploaded by students.');
+        if (!in_array($nd['status'] ?? null, ['Pending review', 'Verified', 'Rejected'], true)) deny('Invalid status.');
+        return array_merge($od, ['status' => $nd['status'], 'note' => str($nd['note'] ?? '', 300)]);
+      },
     ],
     'trainer' => [
       'programs' => function ($nd, $od, $u) {
@@ -185,6 +191,21 @@ function writer(string $role, string $coll): ?callable {
         foreach (store::all('jobApps') as $a) if (($a['email'] ?? null) === $u['email'] && ($a['jobId'] ?? null) === $jid) deny('Already applied.');
         return ['id' => str($nd['id'], 40), 'email' => $u['email'], 'name' => $u['name'], 'jobId' => $jid, 'date' => str($nd['date'] ?? '', 10), 'status' => 'Applied'];
       },
+      'documents' => function ($nd, $od, $u) {
+        if ($od) {
+          if (($od['email'] ?? null) !== $u['email']) deny('Not allowed.');
+          if (($od['status'] ?? null) === 'Verified') deny('Verified documents cannot be changed.');
+          return array_merge($od, ['title' => str($nd['title'] ?? '', 120)]);
+        }
+        if (!student_of($u['email'])) deny('No enrollment.');
+        if (!in_array($nd['type'] ?? null, DOC_TYPES, true)) deny('Choose a document type.');
+        $f = q('SELECT * FROM files WHERE id=?', [str($nd['fileId'] ?? '', 80)])->fetch();
+        if (!$f || $f['kind'] !== 'document' || $f['owner'] !== $u['email']) deny('Upload the file first.');
+        $n = 0; foreach (store::all('documents') as $d) if (($d['email'] ?? null) === $u['email']) $n++;
+        if ($n >= 30) deny('You can keep up to 30 documents.');
+        $title = str($nd['title'] ?? '', 120);
+        return ['id' => str($nd['id'], 40), 'email' => $u['email'], 'name' => $u['name'], 'type' => $nd['type'], 'title' => $title !== '' ? $title : $f['name'], 'fileId' => $f['id'], 'fileName' => $f['name'], 'size' => (int)$f['size'], 'date' => str($nd['date'] ?? '', 10), 'status' => 'Pending review', 'note' => ''];
+      },
       'students' => function ($nd, $od, $u) {
         if (!$od || ($od['email'] ?? null) !== $u['email']) deny('Not allowed.');
         $pg = $nd['program'] ?? null;
@@ -208,10 +229,15 @@ function validate_write(?array $user, string $coll, $nd, ?array $od): array {
 
 function validate_delete(array $user, string $coll, ?array $od): void {
   if (!$od) return;
+  if ($user['role'] === 'student' && $coll === 'documents') {
+    if (($od['email'] ?? null) !== $user['email']) deny('Not allowed.');
+    if (($od['status'] ?? null) === 'Verified') deny('Verified documents cannot be deleted.');
+    return;
+  }
   if ($user['role'] !== 'admin') deny('Only admins can delete records.');
   if ($coll === 'programs') foreach (store::all('students') as $s) if (($s['program'] ?? null) === $od['id']) deny('Cannot delete a program that has enrolled students. Move them first or unpublish it.');
   if ($coll === 'students') deny('Delete students from the Students page.');
-  if (in_array($coll, ['applications', 'jobs', 'announcements', 'messages', 'employers', 'certs', 'jobApps', 'interviews', 'submissions', 'results', 'attendanceLog', 'programs'], true)) return;
+  if (in_array($coll, ['applications', 'jobs', 'announcements', 'messages', 'employers', 'certs', 'documents', 'jobApps', 'interviews', 'submissions', 'results', 'attendanceLog', 'programs'], true)) return;
   deny('Not allowed.');
 }
 
