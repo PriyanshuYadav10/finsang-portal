@@ -91,6 +91,45 @@ A.qz=(act,v)=>{const Q=FS.quizDef(),s=FS.ui.qz||(FS.ui.qz={s:0,a:{}});
 const wv=(t,k0)=>String(t).split(' ').filter(Boolean).map((w,i)=>`<span class="w" style="--k:${k0+i}">${E(w)}</span>`).join(' ');
 FS.wave=(fill,flip)=>`<svg class="wave ${flip?'fl':''}" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path fill="${fill}" d="M0 40C180 80 360 0 540 28s360 52 540 20 270-34 360-8V80H0z"/></svg>`;
 
+/* "Why Finsang" pop-ups: every figure comes from the live program data */
+FS.whyDetail=i=>{const ps=FS.programs(),C=FS.state.criteria,ks=Object.keys(FS.ORGS),n=ps.length,
+ sum=(f)=>ps.reduce((a,p)=>a+f(p),0),mods=sum(p=>(p.modules||[]).length),vids=sum(p=>(p.modules||[]).reduce((m,x)=>m+(x.videos||[]).length,0)),asg=sum(p=>(p.assignments||[]).length),qn=sum(p=>(p.quiz||[]).length),pap=sum(p=>(p.papers||[]).length);
+ const L=a=>`<ul class="chk">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+ const T=(t,b)=>`<div class="wy-s"><h4>${t}</h4>${b}</div>`;
+ const D=[
+ {t:'3 Months, Five Tracks',ic:'🗓️',lead:`One program, ${n} career tracks, about 3 months. Every track is structured the same way, so you always know what is next.`,
+  body:T('How it works',L(['Each track is organised into modules of video lessons, notes and templates','Five sprints per track, each followed by a practice quiz','Weekly assessments, a mock test and a final evaluation','Month-wise roadmap: Foundation, Intermediate Learning, then Implementation &amp; Career Prep']))+
+   T('The '+n+' tracks',`<div class="wy-g">${ps.map(p=>`<a class="wy-c" href="#/programs/${E(p.id)}" onclick="FS.closeModal()"><i>${E(p.icon)}</i><div><b>${E(p.name)}</b><small>${(p.modules||[]).length} modules · ${p.months} months</small></div></a>`).join('')}</div>`)+
+   T('One fee, every track',`<p>Your single ${E(FS.feeText)} fee unlocks all ${n} tracks. You choose a focus track that shapes your capstone, and you can change it later by talking to your mentor early.</p>`),
+  cta:['View all programs','#/programs']},
+ {t:'Industry-Oriented Curriculum',ic:'🏭',lead:'The curriculum is shaped around real job roles, with input from our technology and e-commerce partners.',
+  body:T('What is in it',L([`${mods} modules across ${n} tracks`,`${vids} video lessons with notes, cheat sheets and templates`,`${qn} practice questions and ${pap} sample, previous and mock papers`,'Each track ends with career preparation: resume template, portfolio and mock interviews']))+
+   T('Built with partners',`<div class="wy-g">${ks.map(k=>{const o=FS.ORGS[k];return `<div class="wy-c"><i style="background:${E(o.color)};color:#fff;font-style:normal;font-weight:800">${E(o.mono||(o.short||'?')[0])}</i><div><b>${E(o.short||o.name)}</b><small>${E(o.role)}</small></div></div>`}).join('')}</div>`)+
+   T('Roles it prepares you for',`<p>${ps.map(p=>E((p.careers||[]).slice(0,2).join(', '))).filter(Boolean).join('; ')}. <span class="hint">Illustrative roles; actual outcomes depend on individual performance and employers.</span></p>`),
+  cta:['See the curriculum','#/programs']},
+ {t:'Practical Projects & Assignments',ic:'🛠️',lead:'You learn by building. Every track has assignments you submit for mentor feedback, and a live project at the end.',
+  body:T('Assignments',L([`${asg} assignments across the ${n} tracks, each with clear instructions and marks`,'Submit a file or a link, and receive marks plus written feedback','Examples: '+ps.slice(0,3).map(p=>E(((p.assignments||[])[0]||{}).title||'')).filter(Boolean).join(', ')]))+
+   T('Live project',`<p>Each track finishes with a live project built against a brief shaped with a partner, reviewed by mentors and presented at the end. For example:</p><div class="wy-q">${E((ps[0]||{}).live||'')}</div>`)+
+   T('How you are assessed',L(['Weekly quizzes and a mock test','Mentor-reviewed assignments','Live project evaluation','Final practical assessment'])),
+  cta:['Explore the tracks','#/programs']},
+ {t:'Industry Mentorship',ic:'🧭',lead:'You are not learning alone. Trainers and partner mentors review your work and guide your progress.',
+  body:T('What mentors do',L(['Review and mark your assignments with written feedback','Guide your live project through sprint demos and reviews','Run industry sessions and open Q&amp;A with partner mentors','Help you choose a focus track and plan your portfolio','Support your career preparation, including mock interviews']))+
+   T('Partner expertise',L(ks.map(k=>{const o=FS.ORGS[k];return `<b>${E(o.short||o.name)}</b>: ${E((o.contrib||[])[0]||o.role)}`}))),
+  cta:['Contact admissions','#/contact']},
+ {t:'Verifiable Certificates',ic:'🏅',lead:'Finish the program and earn a certificate with a unique ID that anyone can check online.',
+  body:T('How you qualify',`<div class="wy-k"><div><b>${C.progress}%</b><span>lessons completed</span></div><div><b>${C.score}%</b><span>average assessment score</span></div><div><b>${C.attendance}%</b><span>attendance</span></div></div><p class="hint">These are the current completion criteria. Your dashboard shows your live progress against each.</p>`)+
+   T('Why it is trustworthy',L(['Every certificate carries a unique ID (for example FSC-2026-0001)','Employers and colleges can verify it on our verification page','Issued only after the criteria are met and reviewed by our team'])),
+  cta:['Verify a certificate','#/verify']},
+ {t:'Placement & Startup Support',ic:'💼',lead:'Career support is built into the program, whether you want a job or want to start your own business.',
+  body:T('Placement assistance',L(['Resume templates and reviews for every track','Mock interviews and career preparation','Access to openings from Finsang and partners, with one-click applications','Interview scheduling and application tracking in your dashboard']))+
+   T('Founder Sprint, for future founders',L(['A structured path from idea to first customers, running alongside your tracks','Validate, model, build, then launch and pitch, with mentors','Real assets: validated idea, business model, brand basics, first product scope, launch plan and pitch deck']))+
+   `<div class="alert w" style="margin-top:6px"><b>Placement assistance, not a guarantee.</b> Hiring decisions rest with employers. Startup support is mentorship and guidance, not funding.</div>`,
+  cta:['See the Founder Sprint','#/founder']}];
+ return D[i]};
+A.why=i=>{const d=FS.whyDetail(i);if(!d)return;
+ FS.modal(`<div class="wy"><div class="wy-h"><i>${d.ic}</i><div><span class="pill">Why Finsang</span><h3>${E(d.t)}</h3></div></div><p class="wy-l">${d.lead}</p>${d.body}
+ <div class="row wy-a"><a class="btn btn-a" href="${d.cta[1]}" onclick="FS.closeModal()">${E(d.cta[0])} <span class="ar">→</span></a><button class="btn btn-o" onclick="A.enroll();">Apply now</button></div></div>`,true);
+ FS.fixLinks(document.getElementById('modal'))};
 FS.route('/',()=>{
  const progs=FS.programs(),cats=[...new Set(progs.map(p=>p.cat))];
  const lessons=progs.reduce((n,p)=>n+(p.modules||[]).reduce((m,x)=>m+(x.videos||[]).length,0),0),qn=progs.reduce((n,p)=>n+(p.quiz||[]).length,0);
@@ -131,7 +170,7 @@ FS.route('/',()=>{
   <div class="qz-r" aria-hidden="true"><div class="arch sm"><span>🎯</span></div><div class="orbit r1"></div></div></div></section>
 
  <section class="sec alt"><div class="wrap rv"><div class="sec-head"><span class="pill">Why Finsang</span><h2>${FS.hl(C.home.whyTitle)}</h2></div>
-  <div class="bento stg">${hl.map((h,i)=>`<div class="bn ${i===0?'big':''}"><i>${h[0]}</i><h3>${h[1]}</h3><p>${h[2]}</p></div>`).join('')}</div></div></section>
+  <div class="bento stg">${hl.map((h,i)=>`<div class="bn ${i===0?'big':''}" role="button" tabindex="0" onclick="A.why(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();A.why(${i})}"><i>${h[0]}</i><h3>${h[1]}</h3><p>${h[2]}</p><span class="bn-m">Learn more <b>→</b></span></div>`).join('')}</div></div></section>
 
  <section class="sec"><div class="wrap rv"><div class="sec-head"><span class="pill">How it works</span><h2>Your journey from <mark>application to career</mark></h2></div>
   <div class="tl stg">${steps.map((s,i)=>`<div class="tl-s"><div class="n">${i+1}</div><h3>${s[0]}</h3><p>${s[1]}</p></div>`).join('')}</div></div></section>
