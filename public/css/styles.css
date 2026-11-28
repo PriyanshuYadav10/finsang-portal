@@ -990,3 +990,14 @@ details.faq{transition:.2s}details.faq[open]{border-color:var(--gold);box-shadow
 .wt-l>div>i{width:12px;height:12px;flex:none}.wt-l span{flex:1}.wt-l b{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--navy)}
 .wt-l .wt-t{background:#faf5e4;font-weight:700}
 @media(max-width:600px){.mk-sum{grid-template-columns:1fr}.mk-sum>div{border-right:0;border-bottom:1px solid var(--line)}.mk-sum>div:last-child{border:0}}
+
+/* partner logos: white tile so any logo reads clearly */
+.plogo img{background:#fff!important;border:1px solid var(--line);padding:3px}
+.oc{display:flex;align-items:center;gap:14px}
+.oc-m{width:64px;height:64px;border-radius:14px;object-fit:contain;background:#fff;border:1px solid var(--line);padding:4px;flex:none;display:grid;place-items:center;font-style:normal;font-weight:800;color:#fff;font-size:1.3rem}
+.oc-t b{display:block;font-size:1.05rem;color:var(--navy);line-height:1.2}
+.oc-t span{display:block;font-size:.88rem;color:var(--ink);margin-top:2px}
+.oc-t em{display:block;font-style:normal;font-size:.78rem;color:var(--mut);margin-top:3px}
+.lp-p{align-items:center}
+footer .pf{display:flex;gap:10px;align-items:flex-start;padding:5px 0}
+footer .pf img,footer .pf i{width:34px;height:34px;border-radius:8px;object-fit:contain;background:#fff;padding:2px;flex:none;display:grid;place-items:center;font-style:normal;font-weight:800;color:#fff;font-size:.8rem}

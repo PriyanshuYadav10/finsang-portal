@@ -37,7 +37,7 @@ const mergeC=(d,c)=>{if(Array.isArray(d))return Array.isArray(c)&&c.length?c:d;i
  if(typeof d==='boolean')return typeof c==='boolean'?c:d;return typeof c==='string'&&c!==''?c:d};
 FS.C=()=>mergeC(FS.CD(),FS.state.content||{});
 /* rebuild FS.ORGS (partners) from the merged content; the first partner is always "finsang", the organizer */
-FS.applyContent=()=>{const ps=FS.C().partners,o={};ps.forEach(p=>{o[p.id]=p});if(!o.finsang)o.finsang=ps[0];FS.ORGS=o};
+FS.applyContent=()=>{const ps=FS.C().partners.map(p=>(!p.logo&&FS.ORGS0[p.id]&&FS.ORGS0[p.id].logo)?Object.assign({},p,{logo:FS.ORGS0[p.id].logo}):p),o={};ps.forEach(p=>{o[p.id]=p});if(!o.finsang)o.finsang=ps[0];FS.ORGS=o};
 /* {fee} {count} {months} {org} placeholders and [[highlight]] markup */
 FS.fx=t=>{const ps=FS.programs(),mo=ps.map(p=>p.months),mr=mo.length?(Math.min(...mo)===Math.max(...mo)?String(mo[0]):Math.min(...mo)+'–'+Math.max(...mo)):'3–4';
  return String(t==null?'':t).replace(/\{fee\}/g,FS.feeText||'').replace(/\{count\}/g,ps.length).replace(/\{months\}/g,mr).replace(/\{org\}/g,(FS.ORGS.finsang||{}).name||'')};
@@ -257,7 +257,7 @@ FS.route('/programs/([\\w-]+)',([id])=>{
   const sh=m=>aw&&tot?`<span class="tag t">${fmtN(m/tot*aw)}% of final score</span>`:'';
   return `<div class="mk-sum"><div><b>${tot}</b><span>total marks</span></div><div><b>${as.length}</b><span>assignments</span></div>${aw?`<div><b>${aw}%</b><span>of your final score</span></div>`:''}</div>
   <div class="grid g2">${as.map(a=>`<div class="card flat"><b>${E(a.title)}</b><p style="font-size:.9rem;margin-top:4px">${E(a.desc)}</p><div class="mk-r"><span class="tag a">${a.marks} / ${tot} marks</span>${sh(a.marks)}</div><div class="bar" style="margin-top:10px"><i style="width:${tot?Math.round(a.marks/tot*100):0}%"></i></div></div>`).join('')}</div>${aw?`<p class="hint" style="margin-top:12px">How it is calculated: each assignment's share of the ${tot} total marks, multiplied by the ${aw}% that assignments carry in your final score.</p>`:''}`})()}</div>
- <div class="blk" id="s-project"><h2>Live Project</h2><div class="lp" style="--pc:${E(o.color)}"><p class="lp-t">${E(p.live||'')}</p><div class="lp-p"><span>Project partner</span>${FS.logoOrg(p.partner)}<em>${E(o.role||'')}</em></div></div></div>
+ <div class="blk" id="s-project"><h2>Live Project</h2><div class="lp" style="--pc:${E(o.color)}"><p class="lp-t">${E(p.live||'')}</p><div class="lp-p"><span>Project partner</span>${FS.orgCard(p.partner)}</div></div></div>
  <div class="blk" id="s-assessment"><h2>Assessment Methodology</h2>${(()=>{const W=FS.weights(p),sum=W.reduce((a,x)=>a+x.w,0);
   return W.length&&sum===100?`<div class="wt-bar">${W.map((x,i)=>`<i class="w${i}" style="flex:${x.w}" title="${E(x.n)} ${x.w}%"></i>`).join('')}</div><div class="wt-l">${W.map((x,i)=>`<div><i class="w${i}"></i><span>${E(x.n)}</span><b>${x.w}%</b></div>`).join('')}<div class="wt-t"><span>Final score</span><b>100%</b></div></div>`:`<ul class="chk">${(p.assess||[]).map(t=>`<li>${E(t)}</li>`).join('')}</ul>`})()}<p style="margin-top:12px">Weekly assessments, a mock test and a final evaluation determine completion and certification eligibility.</p></div>
  <div class="blk" id="s-careers"><h2>Sample Career Opportunities</h2><div class="pill-row">${(p.careers||[]).map(c=>`<span class="tag t" style="font-size:.9rem;padding:8px 14px">${E(c)}</span>`).join('')}</div><p class="hint" style="margin-top:8px">Illustrative roles; actual outcomes depend on individual performance and employers.</p></div>

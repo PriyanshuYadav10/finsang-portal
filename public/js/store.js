@@ -133,6 +133,11 @@ FS.bar=p=>`<div class="bar"><i style="width:${p}%"></i></div>`;
 FS.logoOrg=(k,lg)=>{const o=FS.ORGS[k]||FS.ORGS.finsang,e=FS.esc,lbl=e(o.short||o.name);
  const mark=o.logo?`<img src="${e(o.logo)}" alt="${lbl} logo" loading="lazy">`:`<i style="background:${e(o.color)}">${e(o.mono||(o.short||o.name||'?')[0])}</i>`;
  return `<span class="plogo ${lg?'lg':''}">${mark}<span>${lbl}</span></span>`};
+FS.orgMark=(k,cls)=>{const o=FS.ORGS[k]||FS.ORGS.finsang,e=FS.esc,lbl=e(o.short||o.name);
+ return o.logo?`<img class="${cls||''}" src="${e(o.logo)}" alt="${lbl} logo" loading="lazy">`:`<i class="${cls||''}" style="background:${e(o.color)}">${e(o.mono||(o.short||o.name||'?')[0])}</i>`};
+/* logo + short name + full company name + role */
+FS.orgCard=k=>{const o=FS.ORGS[k]||FS.ORGS.finsang,e=FS.esc,full=String(o.name||'').replace(/\.+$/,'');
+ return `<div class="oc">${FS.orgMark(k,'oc-m')}<div class="oc-t"><b>${e(o.short||o.name)}</b>${full&&full!==(o.short||'')?`<span>${e(full)}</span>`:''}${o.role?`<em>${e(o.role)}</em>`:''}</div></div>`};
 FS.certHtml=c=>`<div class="cert"><span class="wm">${c.demo?'SAMPLE / DEMO':'CERTIFICATE'}</span>
 <div style="font:700 .9rem system-ui;letter-spacing:.2em;color:#7a5a12">FINSANG INDIA DIGITAL SOLUTION PVT. LTD.</div>
 <h1>Certificate of Completion</h1><p>This is to certify that</p><div class="nm">${FS.esc(c.name)}</div>
