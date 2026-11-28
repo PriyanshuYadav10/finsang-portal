@@ -21,15 +21,22 @@ FS.mountPublic=(html,active)=>{
   if(FS.chrome)FS.chrome();
   FS.polishPub();
 };
-function footer(){const S=FS.state.site||{};return `<footer><div class="wrap"><div class="cols">
- <div><div class="logo" style="margin-bottom:12px"><img src="img/logo.png" alt="Finsang"></div>
- <p style="color:#bdbbb3;font-size:.88rem">${E(String(FS.ORGS.finsang.name).replace(/\.+$/,''))}. ${E(FS.C().footer.about)}</p>
- <div class="ct">${S.email?`<div><span class="ic">✉</span><span><a href="mailto:${E(S.email)}"><b>${E(S.email)}</b></a></span></div>`:''}${S.phone?`<div><span class="ic">📞</span><span><a href="tel:${E(String(S.phone).replace(/[^\d+]/g,''))}"><b>${E(S.phone)}</b></a></span></div>`:''}${S.address?`<div><span class="ic">📍</span><span><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(S.address)}" target="_blank" rel="noopener">${E(S.address)}</a> <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(S.address)}" target="_blank" rel="noopener" class="mapl">View on map ↗</a></span></div>`:''}</div>
- <a href="#" onclick="A.enroll();return false" class="apply">Apply now →</a></div>
- <div><h4>Career Tracks</h4>${FS.programs().map(p=>`<a href="#/programs/${p.id}">${E(p.name)}</a>`).join('')}</div>
- <div><h4>Quick Links</h4><a href="#/about">About Us</a><a href="#/partners">Our Partners</a><a href="#/founder">Founder Sprint</a><a href="#/track">Track Application</a><a href="#/verify">Verify Certificate</a><a href="#/login">Student / Staff Login</a><a href="#/contact">Contact Us</a><a href="#/faq">FAQs</a><a href="#/privacy">Privacy Policy</a><a href="#/terms">Terms &amp; Conditions</a></div>
- <div><h4>Program Partners</h4>${Object.keys(FS.ORGS).filter(k=>k!=='finsang').map(k=>`<a href="#/partners" class="pf">${FS.orgMark(k)}<span><b style="color:#fff">${E(FS.ORGS[k].name)}</b><br>${E(FS.ORGS[k].role)}</span></a>`).join('')}</div></div>
- <div class="bot"><span>© ${new Date().getFullYear()} ${E(String(FS.ORGS.finsang.name).replace(/\.+$/,''))}. All rights reserved.</span><span>Placement assistance is not a guarantee of employment.</span></div></div></footer>${FS.fab?FS.fab():''}`}
+function footer(){const S=FS.state.site||{},org=String(FS.ORGS.finsang.name).replace(/\.+$/,''),yr=new Date().getFullYear();
+ const ic={m:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
+  p:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>',
+  a:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>'};
+ const row=(i,l,v)=>`<div class="ft-r"><i>${ic[i]}</i><div><small>${l}</small>${v}</div></div>`;
+ const map='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(S.address||'');
+ return `<footer class="ft"><div class="wrap">
+ <div class="ft-top"><a class="ft-brand" href="#/"><img src="img/logo.png" alt="Finsang"><span><b>Finsang</b><small>360° Career Program</small></span></a>
+  <p class="ft-about">${E(org)}. ${E(FS.C().footer.about)}</p>
+  <div class="ft-cta"><a href="#" onclick="A.enroll();return false" class="btn btn-a">Apply now <span class="ar">→</span></a><a href="#/contact" class="btn btn-w">Contact us</a></div></div>
+ <div class="ft-grid">
+  <div class="ft-c"><h4>Contact us</h4>${S.email?row('m','Email',`<a href="mailto:${E(S.email)}">${E(S.email)}</a>`):''}${S.phone?row('p','Phone',`<a href="tel:${E(String(S.phone).replace(/[^\d+]/g,''))}">${E(S.phone)}</a>`):''}${S.address?row('a','Address',`<span>${E(S.address)}</span><a class="ft-map" href="${map}" target="_blank" rel="noopener">View on map ↗</a>`):''}</div>
+  <div class="ft-c ft-l"><h4>Career tracks</h4>${FS.programs().map(p=>`<a href="#/programs/${p.id}">${E(p.name)}</a>`).join('')}</div>
+  <div class="ft-c ft-l"><h4>Quick links</h4><a href="#/about">About us</a><a href="#/partners">Our partners</a><a href="#/founder">Founder Sprint</a><a href="#/track">Track application</a><a href="#/verify">Verify certificate</a><a href="#/faq">FAQs</a><a href="#/contact">Contact us</a><a href="#/login">Student / staff login</a></div>
+  <div class="ft-c"><h4>Program partners</h4>${Object.keys(FS.ORGS).filter(k=>k!=='finsang').map(k=>`<a href="#/partners" class="pf">${FS.orgMark(k)}<span><b>${E(FS.ORGS[k].name)}</b>${E(FS.ORGS[k].role)}</span></a>`).join('')}</div></div>
+ <div class="ft-bot"><span>© ${yr} ${E(org)}. All rights reserved.</span><nav><a href="#/privacy">Privacy policy</a><a href="#/terms">Terms &amp; conditions</a></nav><span class="ft-note">Placement assistance is not a guarantee of employment.</span></div></div></footer>${FS.fab?FS.fab():''}`}
 
 /* ---------- Portal shell (student / trainer / admin) ---------- */
 FS.NAVG={student:[['Learn',['dashboard','programs','materials','videos']],['Practice',['assessments','assignments']],['Stay updated',['announcements','certificates','placement']]],
