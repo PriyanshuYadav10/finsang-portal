@@ -1072,3 +1072,11 @@ footer.ft::before{content:'';display:block;height:3px;background:linear-gradient
 .price .btn{width:100%}
 @media(max-width:860px){.price{grid-template-columns:1fr!important}.price>div:last-child{min-width:0}}
 @media(max-width:520px){.price ul{grid-template-columns:1fr}}
+
+/* sequential course: locked modules */
+.jr-i.lock .jr-n{background:#efece2;border-color:#e0dccf;font-size:.9rem}.jr-i.lock .jr-t b{color:var(--mut)}.jr-i.lock .jr-t span{color:#a09d92}
+.jr-l{margin:0;font-size:.82rem;color:#a09d92;font-style:italic}
+.vi.lk{opacity:.5;cursor:not-allowed}.vi.lk:hover{background:none}
+.cr{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
+
+.wy-k{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))!important}

@@ -25,7 +25,7 @@ FS.CD=()=>({
   ['Who can apply?','Students, freshers, graduates and aspiring professionals. Each track lists its own eligibility criteria.'],
   ['Can I learn more than one track?','Yes. All {count} tracks are part of the program and are taught within the {months} months. Your focus track gets extra depth in the final capstone, and you can change it by talking to your mentor early.'],
   ['I want to start a business. Can you help?','Yes. The Founder Sprint gives you mentorship and guidance from idea validation to your first customers. It is mentorship, not funding.'],
-  ['How do I get a certificate?','Meet the completion criteria (progress, assessment score and attendance). Every certificate has a unique ID that can be verified online.'],
+  ['How do I get a certificate?','Meet the completion criteria (progress and assessment score). Every certificate has a unique ID that can be verified online.'],
   ['What do I need to join?','A resume, a working email and phone number, and a laptop or desktop with a stable internet connection.'],
   ['How does admission work?','Submit the application, receive an application ID, our team reviews it, and once approved you get access to the student dashboard.']],
  contact:{sub:'We usually reply within 2 working days.',hours:'We usually reply within 2 working days',note:'Request a call back and a counsellor will reach out.'},
@@ -118,7 +118,7 @@ FS.whyDetail=i=>{const ps=FS.programs(),C=FS.state.criteria,ks=Object.keys(FS.OR
    T('Partner expertise',L(ks.map(k=>{const o=FS.ORGS[k];return `<b>${E(o.short||o.name)}</b>: ${E((o.contrib||[])[0]||o.role)}`}))),
   cta:['Contact admissions','#/contact']},
  {t:'Verifiable Certificates',ic:'🏅',lead:'Finish the program and earn a certificate with a unique ID that anyone can check online.',
-  body:T('How you qualify',`<div class="wy-k"><div><b>${C.progress}%</b><span>lessons completed</span></div><div><b>${C.score}%</b><span>average assessment score</span></div><div><b>${C.attendance}%</b><span>attendance</span></div></div><p class="hint">These are the current completion criteria. Your dashboard shows your live progress against each.</p>`)+
+  body:T('How you qualify',`<div class="wy-k"><div><b>${C.progress}%</b><span>lessons completed</span></div><div><b>${C.score}%</b><span>average assessment score</span></div></div><p class="hint">These are the current completion criteria. Your dashboard shows your live progress against each.</p>`)+
    T('Why it is trustworthy',L(['Every certificate carries a unique ID (for example FSC-2026-0001)','Employers and colleges can verify it on our verification page','Issued only after the criteria are met and reviewed by our team'])),
   cta:['Verify a certificate','#/verify']},
  {t:'Placement & Startup Support',ic:'💼',lead:'Career support is built into the program, whether you want a job or want to start your own business.',
@@ -262,7 +262,7 @@ FS.route('/programs/([\\w-]+)',([id])=>{
  <div class="blk" id="s-assessment"><h2>Assessment Methodology</h2>${(()=>{const W=FS.weights(p),sum=W.reduce((a,x)=>a+x.w,0);
   return W.length&&sum===100?`<div class="wt-bar">${W.map((x,i)=>`<i class="w${i}" style="flex:${x.w}" title="${E(x.n)} ${x.w}%"></i>`).join('')}</div><div class="wt-l">${W.map((x,i)=>`<div><i class="w${i}"></i><span>${E(x.n)}</span><b>${x.w}%</b></div>`).join('')}<div class="wt-t"><span>Final score</span><b>100%</b></div></div>`:`<ul class="chk">${(p.assess||[]).map(t=>`<li>${E(t)}</li>`).join('')}</ul>`})()}<p style="margin-top:12px">Weekly assessments, a mock test and a final evaluation determine completion and certification eligibility.</p></div>
  <div class="blk" id="s-careers"><h2>Sample Career Opportunities</h2><div class="pill-row">${(p.careers||[]).map(c=>`<span class="tag t" style="font-size:.9rem;padding:8px 14px">${E(c)}</span>`).join('')}</div><p class="hint" style="margin-top:8px">Illustrative roles; actual outcomes depend on individual performance and employers.</p></div>
- <div class="blk" id="s-certification"><h2>Certification</h2><p style="color:var(--ink)">A Certificate of Completion from Finsang India is issued when you meet the criteria: minimum <b>${FS.state.criteria.progress}%</b> completion, <b>${FS.state.criteria.score}%</b> assessment score and <b>${FS.state.criteria.attendance}%</b> attendance. Every certificate carries a unique ID verifiable on our <a href="#/verify">verification page</a>.</p></div>
+ <div class="blk" id="s-certification"><h2>Certification</h2><p style="color:var(--ink)">A Certificate of Completion from Finsang India is issued when you meet the criteria: minimum <b>${FS.state.criteria.progress}%</b> completion and <b>${FS.state.criteria.score}%</b> assessment score. Every certificate carries a unique ID verifiable on our <a href="#/verify">verification page</a>.</p></div>
  <div class="blk" id="s-placement"><h2>Placement Assistance</h2><div class="alert w"><b>Placement assistance, not a guarantee.</b> We support you with resume reviews, mock interviews, interview scheduling and access to partner openings. Hiring decisions rest with employers.</div></div>
  <div class="blk" id="s-eligibility"><h2>Eligibility Criteria</h2><ul class="chk">${(p.eligibility||[]).map(t=>`<li>${E(t)}</li>`).join('')}</ul></div>
  <div class="blk" id="s-faq"><h2>Frequently Asked Questions</h2>${faqHtml(p.faqs||[])}</div>

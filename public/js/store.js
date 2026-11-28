@@ -111,8 +111,11 @@ FS.scoreOf=s=>{
   return pcts.length?Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length):0;
 };
 FS.eligible=s=>{const c=FS.state.criteria,p=FS.progressOf(s),sc=FS.scoreOf(s);
-  return {progress:p>=c.progress,score:sc>=c.score,attendance:s.attendance>=c.attendance,ok:p>=c.progress&&sc>=c.score&&s.attendance>=c.attendance,p,sc}};
-FS.readiness=s=>Math.round(FS.progressOf(s)*.4+FS.scoreOf(s)*.4+s.attendance*.2);
+  return {progress:p>=c.progress,score:sc>=c.score,ok:p>=c.progress&&sc>=c.score,p,sc}};
+FS.readiness=s=>Math.round(FS.progressOf(s)*.5+FS.scoreOf(s)*.5);
+/* sequential course: a module opens only once every earlier module is complete */
+FS.modState=(pid,w)=>{let open=true;return FS.modules(pid).map(m=>{const n=m.vids.length,d=m.vids.filter(v=>w[v.id]).length,done=d===n,st={n,d,done,locked:!open};if(!done)open=false;return st})};
+FS.lockedVid=(pid,w,vid)=>{const ms=FS.modules(pid),st=FS.modState(pid,w);const i=ms.findIndex(m=>m.vids.some(v=>v.id===vid));return i>=0&&st[i].locked};
 FS.certOf=email=>FS.state.certs.find(c=>c.email===email);
 
 /* ---- auth ---- */
