@@ -31,7 +31,7 @@ FS.CD=()=>({
  contact:{sub:'We usually reply within 2 working days.',hours:'We usually reply within 2 working days',note:'Request a call back and a counsellor will reach out.'},
  legal:{privacy:[['Information we collect','Application details you provide (name, contact, education, resume) and learning activity within the portal.'],['How we use it','To process admissions, deliver the program, issue certificates and assist with placements.'],['Sharing','Application data may be shared with program partners only for program delivery and placement assistance, with your consent.'],['Your choices','You may request access, correction or deletion by contacting us.']],
   terms:[['Eligibility','Admission is subject to review and approval by Finsang India.'],['Certification','Certificates are issued only on meeting published completion criteria and can be verified by ID.'],['Placement assistance','Placement support is assistance only. Employment is not guaranteed.'],['Conduct','Learners must submit original work and follow program guidelines.']]},
- footer:{about:'The Finsang 360° Career Program: 5+ career tracks, certification, placement assistance and startup support (not a guarantee of employment).'}
+ footer:{about:'The Finsang 360° Career Program: 5+ career tracks, certification, placement assistance and startup support.'}
 });
 const mergeC=(d,c)=>{if(Array.isArray(d))return Array.isArray(c)&&c.length?c:d;if(d&&typeof d==='object'){const o={};for(const k in d)o[k]=mergeC(d[k],c&&typeof c==='object'?c[k]:undefined);return o}
  if(typeof d==='boolean')return typeof c==='boolean'?c:d;return typeof c==='string'&&c!==''?c:d};
