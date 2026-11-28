@@ -121,6 +121,7 @@ route('POST', '/apply', function () {
     'qualification' => strt(B('qualification'), 60), 'year' => strt(B('year'), 6), 'program' => strt(B('program'), 80), 'info' => strt(B('info'), 1500)];
   foreach (['name', 'email', 'phone', 'city', 'college', 'qualification', 'year', 'program'] as $k) if ($f[$k] === '') fail('Please fill all required fields.');
   if (!emailOk($f['email'])) fail('Enter a valid email address.');
+  if (!preg_match('/^(19|20)\d{2}$/', $f['year'])) fail('Enter a valid 4-digit year.');
   if (!preg_match('/^[0-9+\- ]{10,15}$/', $f['phone'])) fail('Enter a valid mobile number.');
   $pw = (string)B('password', '');
   if (strlen($pw) < 8) fail('Password must be at least 8 characters.');

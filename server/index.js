@@ -118,6 +118,7 @@ app.post('/api/apply', A.limit('apply', 10, 3600000), wrap((req, res) => {
     qualification: str(b.qualification, 60), year: str(b.year, 6), program: str(b.program, 80), info: str(b.info, 1500) };
   for (const k of ['name', 'email', 'phone', 'city', 'college', 'qualification', 'year', 'program']) if (!f[k]) return res.status(400).json({ error: 'Please fill all required fields.' });
   if (!emailOk(f.email)) return res.status(400).json({ error: 'Enter a valid email address.' });
+  if (!/^(19|20)\d{2}$/.test(f.year)) return res.status(400).json({ error: 'Enter a valid 4-digit year.' });
   if (!/^[0-9+\- ]{10,15}$/.test(f.phone)) return res.status(400).json({ error: 'Enter a valid mobile number.' });
   if (String(b.password || '').length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters.' });
   const prog = store.get('programs', f.program);
