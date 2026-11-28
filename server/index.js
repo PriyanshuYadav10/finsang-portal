@@ -321,6 +321,17 @@ admin.post('/certs', wrap((req, res) => {
   store.tx(() => { store.put('certs', cert.id, cert); store.del('certReq', s.email); });
   res.json({ cert });
 }));
+/* is the data directory on a persistent volume? (a separate device from the container's root filesystem) */
+admin.get('/storage', wrap((req, res) => {
+  const { DATA_DIR } = require('./db');
+  const dbFile = path.join(DATA_DIR, 'finsang.db');
+  let mounted = false, created = null, size = 0;
+  try { mounted = fs.statSync(DATA_DIR).dev !== fs.statSync('/').dev; } catch (e) {}
+  try { const st = fs.statSync(dbFile); created = (st.birthtime && st.birthtime.getTime() > 0 ? st.birthtime : st.ctime).toISOString(); size = st.size; } catch (e) {}
+  const uploads = (() => { try { return fs.readdirSync(UPLOAD_DIR).length; } catch (e) { return 0; } })();
+  res.json({ dir: DATA_DIR, production: process.env.NODE_ENV === 'production', mounted, dbCreated: created, dbSize: size, uploads,
+    counts: { students: store.count('students'), applications: store.count('applications'), users: users.all().length }, uptimeMin: Math.round(process.uptime() / 60) });
+}));
 admin.get('/backup', wrap((req, res) => {
   const out = { exported: new Date().toISOString(), docs: {}, users: users.all().map(({ pass, ...u }) => u) };
   for (const r of q('SELECT DISTINCT coll FROM docs').all()) out.docs[r.coll] = store.all(r.coll).map((d) => acl.outbound(r.coll, d));
@@ -335,5 +346,9 @@ app.get('/favicon.ico', (req, res) => res.status(204).end());
 app.use(express.static(path.join(__dirname, '..', 'public'), { extensions: ['html'], maxAge: 0, index: 'index.html' }));
 app.use((req, res) => res.status(404).sendFile(path.join(__dirname, '..', 'public', 'index.html')));
 
-if (require.main === module) app.listen(PORT, () => console.log(`Finsang portal running at ${BASE_URL}`));
+if (require.main === module) app.listen(PORT, () => {
+  console.log(`Finsang portal running at ${BASE_URL}`);
+  try { if (process.env.NODE_ENV === 'production' && fs.statSync(require('./db').DATA_DIR).dev === fs.statSync('/').dev)
+    console.warn('[WARNING] The data directory is NOT on a mounted volume: the database and uploads will be erased on every redeploy. Mount a persistent volume at ' + require('./db').DATA_DIR); } catch (e) {}
+});
 module.exports = app;
