@@ -29,7 +29,7 @@ function footer(){const S=FS.state.site||{};return `<footer><div class="wrap"><d
  <div><h4>Career Tracks</h4>${FS.programs().map(p=>`<a href="#/programs/${p.id}">${E(p.name)}</a>`).join('')}</div>
  <div><h4>Quick Links</h4><a href="#/about">About Us</a><a href="#/partners">Our Partners</a><a href="#/founder">Founder Sprint</a><a href="#/track">Track Application</a><a href="#/verify">Verify Certificate</a><a href="#/login">Student / Staff Login</a><a href="#/contact">Contact Us</a><a href="#/faq">FAQs</a><a href="#/privacy">Privacy Policy</a><a href="#/terms">Terms &amp; Conditions</a></div>
  <div><h4>Program Partners</h4>${Object.keys(FS.ORGS).filter(k=>k!=='finsang').map(k=>`<a href="#/partners" class="pf">${FS.orgMark(k)}<span><b style="color:#fff">${E(FS.ORGS[k].name)}</b><br>${E(FS.ORGS[k].role)}</span></a>`).join('')}</div></div>
- <div class="bot"><span>© ${new Date().getFullYear()} ${E(FS.ORGS.finsang.name)}. All rights reserved.</span><span>Placement assistance is not a guarantee of employment.</span></div></div></footer>${FS.fab?FS.fab():''}`}
+ <div class="bot"><span>© ${new Date().getFullYear()} ${E(String(FS.ORGS.finsang.name).replace(/\.+$/,''))}. All rights reserved.</span><span>Placement assistance is not a guarantee of employment.</span></div></div></footer>${FS.fab?FS.fab():''}`}
 
 /* ---------- Portal shell (student / trainer / admin) ---------- */
 FS.NAVG={student:[['Learn',['dashboard','programs','materials','videos']],['Practice',['assessments','assignments']],['Stay updated',['announcements','certificates','placement']]],

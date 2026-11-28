@@ -1001,3 +1001,18 @@ details.faq{transition:.2s}details.faq[open]{border-color:var(--gold);box-shadow
 .lp-p{align-items:center}
 footer .pf{display:flex;gap:10px;align-items:flex-start;padding:5px 0}
 footer .pf img,footer .pf i{width:34px;height:34px;border-radius:8px;object-fit:contain;background:#fff;padding:2px;flex:none;display:grid;place-items:center;font-style:normal;font-weight:800;color:#fff;font-size:.8rem}
+
+/* floating actions v2: visible on dark and light backgrounds */
+.fab{right:22px;bottom:22px;gap:14px;align-items:flex-end}
+.fab .fab-cb{display:inline-flex;align-items:center;gap:12px;padding:8px 22px 8px 8px;border:0;border-radius:999px;background:linear-gradient(135deg,#f0d995,#d4b36a);color:#11110f;text-transform:none;letter-spacing:0;font-size:.9rem;box-shadow:0 0 0 3px rgba(255,255,255,.92),0 12px 32px rgba(0,0,0,.4);cursor:pointer;transition:transform .2s,box-shadow .2s}
+.fab .fab-cb:hover{background:linear-gradient(135deg,#f6e3ac,#dcbc73);color:#11110f;transform:translateY(-3px);box-shadow:0 0 0 3px #fff,0 16px 38px rgba(0,0,0,.45)}
+.fab-ic{width:44px;height:44px;border-radius:50%;background:#11110f;color:var(--gold-bright);display:grid;place-items:center;flex:none;transition:transform .3s}.fab-cb:hover .fab-ic{transform:rotate(-12deg) scale(1.06)}
+.fab-tx{display:grid;text-align:left;line-height:1.2}.fab-tx b{font-size:.92rem;font-weight:800;letter-spacing:.01em}.fab-tx small{font-size:.72rem;font-weight:600;opacity:.75}
+.fab .fab-wa{position:relative;width:58px;height:58px;border-radius:50%;background:#25d366;box-shadow:0 0 0 3px rgba(255,255,255,.92),0 12px 30px rgba(0,0,0,.4);transition:transform .2s}
+.fab .fab-wa:hover{transform:scale(1.08)}
+.fab .fab-wa::before{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid #25d366;animation:waPulse 2.6s ease-out infinite;pointer-events:none}
+@keyframes waPulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.55);opacity:0}}
+.fab-tip{position:absolute;right:calc(100% + 14px);top:50%;transform:translateY(-50%) translateX(6px);background:#11110f;color:#fff;font-size:.78rem;font-weight:700;padding:8px 12px;white-space:nowrap;opacity:0;pointer-events:none;transition:.2s;border:1px solid rgba(212,179,106,.5)}
+.fab-wa:hover .fab-tip,.fab-wa:focus-visible .fab-tip{opacity:1;transform:translateY(-50%)}
+@media(max-width:700px){.fab{right:14px;bottom:14px;gap:12px}.fab .fab-cb{padding:5px;gap:0}.fab-tx{display:none}.fab-ic{width:48px;height:48px}.fab .fab-wa{width:54px;height:54px}.fab-tip{display:none}}
+@media(prefers-reduced-motion:reduce){.fab .fab-wa::before{animation:none;opacity:0}}
