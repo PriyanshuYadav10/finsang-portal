@@ -48,8 +48,8 @@ const faqHtml=l=>l.map(f=>`<details class="faq"><summary>${E(f[0])}</summary><p>
 /* ---------- Home (marketing landing page) ---------- */
 FS.stagger=root=>(root||document).querySelectorAll('.stg').forEach(p=>[...p.children].forEach((c,i)=>c.style.setProperty('--i',i)));
 FS.reveal=()=>{FS.stagger();const els=[...document.querySelectorAll('.rv')];
- const run=el=>{el.classList.add('in');el.querySelectorAll('[data-count]').forEach(c=>{const to=+c.dataset.count,t0=performance.now();const step=t=>{const k=Math.min(1,(t-t0)/1200);c.textContent=Math.round(to*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)})};
- if(!('IntersectionObserver' in window)){els.forEach(e=>{e.classList.add('in');e.querySelectorAll('[data-count]').forEach(c=>c.textContent=c.dataset.count)});return}
+ const run=el=>{el.classList.add('in');el.querySelectorAll('[data-count]').forEach(c=>{const to=+c.dataset.count,t0=performance.now();const step=t=>{const k=Math.min(1,(t-t0)/1200);c.textContent=Math.round(to*(1-Math.pow(1-k,3)))+(c.dataset.suf||'');if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)})};
+ if(!('IntersectionObserver' in window)){els.forEach(e=>{e.classList.add('in');e.querySelectorAll('[data-count]').forEach(c=>c.textContent=c.dataset.count+(c.dataset.suf||''))});return}
  const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){run(en.target);io.unobserve(en.target)}}),{threshold:0,rootMargin:'0px 0px -6% 0px'});
  els.forEach(e=>io.observe(e))};
 /* scroll progress bar, sticky-nav shadow and hero parallax (bound once per page) */
@@ -101,7 +101,8 @@ FS.route('/',()=>{
  const meth=[['📖','Learn','Recorded videos, live classes, notes and reference guides.'],['✍️','Practice','Quizzes, topic tests and guided exercises every week.'],['🔨','Build','Assignments and a team live project with mentor reviews.'],['📊','Assess','Weekly assessments, mock tests and a final evaluation.'],['🚀','Launch','Portfolio, mock interviews and placement assistance.']];
  const C=FS.C(),H=C.hero,P=C.pricing,N=C.announcement;
  let ann='';try{ann=(!N.enabled||!N.text||sessionStorage.getItem('fs_ann'))?'':`<div class="annc" id="annc"><span>${E(FS.fx(N.text))}</span>${N.cta?`<a href="#" onclick="A.enroll();return false">${E(N.cta)}</a>`:''}<button onclick="A.annClose()" aria-label="Close">×</button></div>`}catch(e){}
- const st=(n,l)=>`<div class="hs"><b data-count="${n}">0</b><span>${l}</span></div>`;
+ const st=(n,l,suf)=>`<div class="hs"><b data-count="${n}" data-suf="${suf||''}">0${suf||''}</b><span>${l}</span></div>`;
+ const fl=(n,step)=>Math.floor(n/step)*step;
  const chip=s=>`<span>${E(s)}</span>`;
  FS.mountPublic(`${ann}
  <section class="hx2"><div class="mesh" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -117,7 +118,7 @@ FS.route('/',()=>{
     <div class="fcw" style="--d:22;left:2%;bottom:15%"><div class="fc"><b>🏅 Certificate</b><small>Unique, verifiable ID</small></div></div>
     <div class="fcw" style="--d:-18;right:2%;bottom:3%"><div class="fc fc-c"><span>Figma</span><span>React</span><span>SEO</span><span>CRM</span></div></div></div></div>
   <div class="wrap hx2-b rv"><div class="feat"><span>✓ Verifiable certificate</span><span>✓ Live projects</span><span>✓ Mentor support</span><span>✓ Placement assistance*</span></div>
-   <div class="stats2">${st(progs.length,'Career tracks')}<div class="hs"><b>${mr}</b><span>Months of learning</span></div>${st(lessons,'Video lessons')}${st(qn,'Practice questions')}${st(Object.keys(FS.ORGS).length,'Industry partners')}</div></div></section>
+   <div class="stats2">${st(progs.length,'Career tracks','+')}<div class="hs"><b>${mr}</b><span>Months of learning</span></div>${st(fl(lessons,10),'Video lessons','+')}${st(fl(qn,5),'Practice questions','+')}${st(Object.keys(FS.ORGS).length,'Industry partners')}</div></div></section>
 
  <section class="sec dk2"><div class="wave-t">${FS.wave('#f5f4ef',1)}</div><div class="wrap rv"><div class="sec-head"><span class="pill dk">Skills you will build</span><h2>Hands-on skills across <mark>five career tracks</mark></h2><p>From coding and design to marketing, sales and e-commerce.</p></div></div>
   <div class="mq"><div class="mt">${[...r1,...r1].map(chip).join('')}</div></div><div class="mq rev"><div class="mt">${[...r2,...r2].map(chip).join('')}</div></div><div class="wave-b">${FS.wave('#f5f4ef')}</div></section>
