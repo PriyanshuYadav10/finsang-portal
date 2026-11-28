@@ -233,6 +233,10 @@ A.apply=async e=>{e.preventDefault();const form=e.target,btn=form.querySelector(
  }catch(x){FS.err(x)}finally{btn.disabled=false}
  return false};
 
+/* assessment weights parsed from the program's published methodology, e.g. "Assignments & code reviews (30%)" */
+FS.weights=p=>(p.assess||[]).map(t=>{const m=/^(.*?)\s*\((\d+(?:\.\d+)?)%\)\s*$/.exec(String(t));return m?{n:m[1],w:+m[2]}:null}).filter(Boolean);
+FS.asgWeight=p=>{const w=FS.weights(p).find(x=>/assign|campaign|task/i.test(x.n));return w?w.w:0};
+const fmtN=n=>String(Math.round(n*100)/100);
 FS.route('/programs/([\\w-]+)',([id])=>{
  const p=FS.program(id);if(!p){FS.go('#/programs');return}
  const o=FS.ORGS[p.partner]||FS.ORGS.finsang;const roadmap=p.roadmap||[];
@@ -249,9 +253,13 @@ FS.route('/programs/([\\w-]+)',([id])=>{
  <div class="blk" id="s-outcomes"><h2>Learning Outcomes</h2><ul class="chk">${(p.outcomes||[]).map(t=>`<li>${E(t)}</li>`).join('')}</ul></div>
  <div class="blk" id="s-curriculum"><h2>Detailed Curriculum</h2>${FS.modules(p.id).map((m,i)=>`<details class="acc" ${i===0?'open':''}><summary>Module ${i+1}: ${E(m.title)}</summary><div><b>Lessons</b><ul class="chk">${m.vids.map(v=>`<li>${E(v.title)}</li>`).join('')||'<li>Content coming soon</li>'}</ul></div></details>`).join('')}</div>
  <div class="blk" id="s-roadmap"><h2>Month-wise Learning Roadmap</h2><div class="rmap">${roadmap.map((m,i)=>`<div class="m"><h3>Month ${i+1} — ${i===roadmap.length-1&&roadmap.length===3?'Implementation & Career Prep':titles[i]}</h3><ul class="chk" style="margin-top:6px">${m.map(x=>`<li>${E(x)}</li>`).join('')}</ul></div>`).join('')||'<p>Roadmap will be published soon.</p>'}</div></div>
- <div class="blk" id="s-assignments"><h2>Practical Assignments</h2><div class="grid g2">${(p.assignments||[]).map(a=>`<div class="card flat"><b>${E(a.title)}</b><p style="font-size:.9rem;margin-top:4px">${E(a.desc)}</p><span class="tag a" style="margin-top:8px">${a.marks} marks</span></div>`).join('')}</div></div>
+ <div class="blk" id="s-assignments"><h2>Practical Assignments</h2>${(()=>{const as=p.assignments||[],tot=as.reduce((a,x)=>a+(+x.marks||0),0),aw=FS.asgWeight(p);
+  const sh=m=>aw&&tot?`<span class="tag t">${fmtN(m/tot*aw)}% of final score</span>`:'';
+  return `<div class="mk-sum"><div><b>${tot}</b><span>total marks</span></div><div><b>${as.length}</b><span>assignments</span></div>${aw?`<div><b>${aw}%</b><span>of your final score</span></div>`:''}</div>
+  <div class="grid g2">${as.map(a=>`<div class="card flat"><b>${E(a.title)}</b><p style="font-size:.9rem;margin-top:4px">${E(a.desc)}</p><div class="mk-r"><span class="tag a">${a.marks} / ${tot} marks</span>${sh(a.marks)}</div><div class="bar" style="margin-top:10px"><i style="width:${tot?Math.round(a.marks/tot*100):0}%"></i></div></div>`).join('')}</div>${aw?`<p class="hint" style="margin-top:12px">How it is calculated: each assignment's share of the ${tot} total marks, multiplied by the ${aw}% that assignments carry in your final score.</p>`:''}`})()}</div>
  <div class="blk" id="s-project"><h2>Live Project</h2><div class="lp" style="--pc:${E(o.color)}"><p class="lp-t">${E(p.live||'')}</p><div class="lp-p"><span>Project partner</span>${FS.logoOrg(p.partner)}<em>${E(o.role||'')}</em></div></div></div>
- <div class="blk" id="s-assessment"><h2>Assessment Methodology</h2><ul class="chk">${(p.assess||[]).map(t=>`<li>${E(t)}</li>`).join('')}</ul><p style="margin-top:8px">Weekly assessments, a mock test and a final evaluation determine completion and certification eligibility.</p></div>
+ <div class="blk" id="s-assessment"><h2>Assessment Methodology</h2>${(()=>{const W=FS.weights(p),sum=W.reduce((a,x)=>a+x.w,0);
+  return W.length&&sum===100?`<div class="wt-bar">${W.map((x,i)=>`<i class="w${i}" style="flex:${x.w}" title="${E(x.n)} ${x.w}%"></i>`).join('')}</div><div class="wt-l">${W.map((x,i)=>`<div><i class="w${i}"></i><span>${E(x.n)}</span><b>${x.w}%</b></div>`).join('')}<div class="wt-t"><span>Final score</span><b>100%</b></div></div>`:`<ul class="chk">${(p.assess||[]).map(t=>`<li>${E(t)}</li>`).join('')}</ul>`})()}<p style="margin-top:12px">Weekly assessments, a mock test and a final evaluation determine completion and certification eligibility.</p></div>
  <div class="blk" id="s-careers"><h2>Sample Career Opportunities</h2><div class="pill-row">${(p.careers||[]).map(c=>`<span class="tag t" style="font-size:.9rem;padding:8px 14px">${E(c)}</span>`).join('')}</div><p class="hint" style="margin-top:8px">Illustrative roles; actual outcomes depend on individual performance and employers.</p></div>
  <div class="blk" id="s-certification"><h2>Certification</h2><p style="color:var(--ink)">A Certificate of Completion from Finsang India is issued when you meet the criteria: minimum <b>${FS.state.criteria.progress}%</b> completion, <b>${FS.state.criteria.score}%</b> assessment score and <b>${FS.state.criteria.attendance}%</b> attendance. Every certificate carries a unique ID verifiable on our <a href="#/verify">verification page</a>.</p></div>
  <div class="blk" id="s-placement"><h2>Placement Assistance</h2><div class="alert w"><b>Placement assistance, not a guarantee.</b> We support you with resume reviews, mock interviews, interview scheduling and access to partner openings. Hiring decisions rest with employers.</div></div>

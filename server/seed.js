@@ -28,10 +28,21 @@ function seedBase() {
     id: 'site', fee: SITE.fee, email: SITE.email, phone: SITE.phone, address: SITE.address, applicationsOpen: true
   });
   if (!store.get('settings', 'criteria')) store.put('settings', 'criteria', { id: 'criteria', progress: 80, score: 60, attendance: 75 });
-  if (!store.get('settings', 'migrations')) { // one-time: every program is Hybrid, no mentor name shown
+  let mig = store.get('settings', 'migrations') || { id: 'migrations', v: 0 };
+  if (mig.v < 1) { // v1: every program is Hybrid, no mentor name shown
     store.all('programs').forEach((p) => store.put('programs', p.id, { ...p, mode: 'Hybrid', mentor: '' }));
-    store.put('settings', 'migrations', { id: 'migrations', v: 1 });
   }
+  if (mig.v < 2) { // v2: every track's assignments total exactly 100 marks (only if still on the original marks)
+    const OLD = {"software-development": [20, 30, 40, 25, 25], "digital-marketing": [10, 20, 30, 40, 35], "ui-ux-designing": [20, 30, 40, 35, 35], "sales-business-development": [20, 25, 30, 35, 35], "ecommerce-management": [20, 30, 35, 30, 35]}, NEW = {"software-development": [15, 20, 30, 15, 20], "digital-marketing": [10, 15, 20, 30, 25], "ui-ux-designing": [15, 20, 25, 20, 20], "sales-business-development": [15, 20, 20, 25, 20], "ecommerce-management": [10, 20, 20, 25, 25]};
+    for (const p of store.all('programs')) {
+      const o = OLD[p.id], n = NEW[p.id], a = p.assignments || [];
+      if (!o || a.length !== o.length || !a.every((x, i) => x.marks === o[i])) continue;
+      store.put('programs', p.id, { ...p, assignments: a.map((x, i) => ({ ...x, marks: n[i] })) });
+      const ratio = Object.fromEntries(a.map((x, i) => [x.id, n[i] / o[i]]));
+      for (const sub of store.all('submissions')) if (ratio[sub.aid] && sub.marks != null) store.put('submissions', sub.id, { ...sub, marks: Math.round(sub.marks * ratio[sub.aid]) });
+    }
+  }
+  if (mig.v < 2) store.put('settings', 'migrations', { id: 'migrations', v: 2 });
   if (users.countRole('admin') === 0) {
     const email = (process.env.ADMIN_EMAIL || 'admin@finsang.local').toLowerCase();
     const pw = process.env.ADMIN_PASSWORD || 'ChangeMe123!';
@@ -56,8 +67,8 @@ function seedDemo() {
   sd.modules.forEach((m) => m.videos.forEach((v) => { if (n < 7) { w[v.id] = true; n++; } }));
   store.put('watched', 'student@finsang.demo', { id: 'student@finsang.demo', map: w });
   const sub = (a, email, name, marks, fb, st, off) => put('submissions', { id: uid('SUB'), email, name, pid: sd.id, aid: a.id, title: a.title, link: 'https://github.com/sample-user/' + a.id, file: '', note: 'Submitted for review.', date: day(off), status: st, marks, feedback: fb });
-  sub(sd.assignments[0], 'student@finsang.demo', 'Aarav Sharma', 18, 'Clean semantic markup. Improve spacing consistency on mobile.', 'Evaluated', -26);
-  sub(sd.assignments[1], 'student@finsang.demo', 'Aarav Sharma', 26, 'Good use of localStorage. Add input validation and empty states.', 'Evaluated', -12);
+  sub(sd.assignments[0], 'student@finsang.demo', 'Aarav Sharma', 14, 'Clean semantic markup. Improve spacing consistency on mobile.', 'Evaluated', -26);
+  sub(sd.assignments[1], 'student@finsang.demo', 'Aarav Sharma', 17, 'Good use of localStorage. Add input validation and empty states.', 'Evaluated', -12);
   [['ishita@sample.demo', 'Ishita Kapoor'], ['rahul@sample.demo', 'Rahul Verma'], ['riya@sample.demo', 'Riya Bhatt']].forEach(([e, nm]) => sub(sd.assignments[2], e, nm, null, '', 'Submitted', -1));
   put('results', { id: uid('R'), email: 'student@finsang.demo', pid: sd.id, title: 'Month 1 Practice Quiz', score: 4, total: 5, date: day(-20), mode: 'Practice' });
   put('results', { id: uid('R'), email: 'student@finsang.demo', pid: sd.id, title: 'Topic Quiz: JavaScript', score: 3, total: 5, date: day(-9), mode: 'Practice' });

@@ -978,3 +978,15 @@ details.faq{transition:.2s}details.faq[open]{border-color:var(--gold);box-shadow
 .wy-k{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);margin-bottom:10px}.wy-k>div{padding:16px;text-align:center;border-right:1px solid var(--line)}.wy-k>div:last-child{border:0}.wy-k b{display:block;font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--navy);line-height:1.1}.wy-k span{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)}
 .wy-a{margin-top:6px;padding-top:18px;border-top:1px solid var(--line);gap:10px;flex-wrap:wrap}
 @media(max-width:600px){.wy-g{grid-template-columns:1fr}.wy-k{grid-template-columns:1fr}.wy-k>div{border-right:0;border-bottom:1px solid var(--line)}.wy-k>div:last-child{border:0}.wy-h>i{width:48px;height:48px;font-size:1.4rem}.wy-h h3{font-size:1.2rem!important}}
+
+/* marks summary + weights */
+.mk-sum{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);background:#fcfbf7;margin-bottom:16px}
+.mk-sum>div{padding:14px 16px;text-align:center;border-right:1px solid var(--line)}.mk-sum>div:last-child{border:0}
+.mk-sum b{display:block;font-family:'Playfair Display',Georgia,serif;font-size:1.8rem;color:var(--navy);line-height:1.1}.mk-sum span{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--mut)}
+.mk-r{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.wt-bar{display:flex;height:16px;gap:3px;margin:4px 0 16px}.wt-bar i{display:block;min-width:4px}
+.w0{background:#e6ca83}.w1{background:#9a7a2e}.w2{background:#2f9e5d}.w3{background:#11110f}.w4{background:#6f6d66}
+.wt-l{display:grid;gap:0;border:1px solid var(--line)}.wt-l>div{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid #eeeadb}.wt-l>div:last-child{border:0}
+.wt-l>div>i{width:12px;height:12px;flex:none}.wt-l span{flex:1}.wt-l b{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--navy)}
+.wt-l .wt-t{background:#faf5e4;font-weight:700}
+@media(max-width:600px){.mk-sum{grid-template-columns:1fr}.mk-sum>div{border-right:0;border-bottom:1px solid var(--line)}.mk-sum>div:last-child{border:0}}
